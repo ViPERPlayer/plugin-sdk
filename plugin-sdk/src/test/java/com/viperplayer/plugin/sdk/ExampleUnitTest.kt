@@ -1,4 +1,4 @@
-package com.viperplayer.sdk
+package com.viperplayer.plugin.sdk
 
 import org.junit.Test
 

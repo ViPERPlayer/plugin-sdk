@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.viperplayer.sdk"
+    namespace = "com.viperplayer.plugin.sdk"
     compileSdk {
         version = release(36)
     }

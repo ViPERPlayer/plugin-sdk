@@ -75,7 +75,7 @@ abstract class ViperPluginService : Service() {
     
     private val binder = object : IPluginServiceV1.Stub() {
         
-        override fun connect(hostCallback: IHostCallbackV1): Int {
+        override fun connect(hostCallback: IHostCallbackV1) {
             Log.d(TAG, "connect() called")
             val ctrl = HostController(hostCallback)
             hostController = ctrl
@@ -91,9 +91,6 @@ abstract class ViperPluginService : Service() {
                     ctrl.reportError(ErrorCodes.PLUGIN_ERROR, "Connect failed: ${e.message}")
                 }
             }
-            
-            Log.d(TAG, "connect() returning API version 1")
-            return 1
         }
         
         override fun disconnect() {
@@ -130,39 +127,39 @@ abstract class ViperPluginService : Service() {
             types: Int,
             cursor: String?,
             limit: Int,
-            callback: IResultCallback
+            callback: ISearchCallback
         ) {
             Log.d(TAG, "search() called: query=$query, types=$types, cursor=$cursor, limit=$limit")
             scope.launch {
                 try {
                     val result = getPlugin().search(query, types, cursor, limit)
                     Log.d(TAG, "Search completed: songs=${result.songs.size}, albums=${result.albums.size}, artists=${result.artists.size}, playlists=${result.playlists.size}")
-                    callback.onSearchResult(result)
+                    callback.onSuccess(result)
                 } catch (e: PluginException) {
                     Log.e(TAG, "Search failed with PluginException: code=${e.errorCode}, message=${e.message}")
-                    callback.onSearchError(e.errorCode, e.message ?: "Search failed")
+                    throw e
                 } catch (e: Exception) {
                     Log.e(TAG, "Search failed with exception", e)
-                    callback.onSearchError(ErrorCodes.UNKNOWN, e.message ?: "Search failed")
+                    throw PluginException(ErrorCodes.UNKNOWN, e.message ?: "Search failed")
                 }
             }
         }
         
         // ==================== Browse ====================
         
-        override fun getBrowseCategories(cursor: String?, limit: Int, callback: IResultCallback) {
+        override fun getBrowseCategories(cursor: String?, limit: Int, callback: ICategoriesCallback) {
             Log.d(TAG, "getBrowseCategories() called: cursor=$cursor, limit=$limit")
             scope.launch {
                 try {
                     val result = getPlugin().getBrowseCategories(cursor, limit)
                     Log.d(TAG, "Browse categories completed: count=${result.items.size}, nextCursor=${result.nextCursor}")
-                    callback.onCategoriesResult(result.items, result.nextCursor)
+                    callback.onSuccess(result.items, result.nextCursor)
                 } catch (e: PluginException) {
                     Log.e(TAG, "Failed to get browse categories: code=${e.errorCode}, message=${e.message}")
-                    callback.onError(e.errorCode, e.message ?: "Failed to get categories")
+                    throw e
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to get browse categories", e)
-                    callback.onError(ErrorCodes.UNKNOWN, e.message ?: "Failed to get categories")
+                    throw PluginException(ErrorCodes.UNKNOWN, e.message ?: "Failed to get categories")
                 }
             }
         }
@@ -171,143 +168,143 @@ abstract class ViperPluginService : Service() {
             categoryId: String,
             cursor: String?,
             limit: Int,
-            callback: IResultCallback
+            callback: ISearchCallback
         ) {
             Log.d(TAG, "getCategoryContents() called: categoryId=$categoryId, cursor=$cursor, limit=$limit")
             scope.launch {
                 try {
                     val result = getPlugin().getCategoryContents(categoryId, cursor, limit)
                     Log.d(TAG, "Category contents completed: songs=${result.songs.size}, albums=${result.albums.size}")
-                    callback.onSearchResult(result)
+                    callback.onSuccess(result)
                 } catch (e: PluginException) {
                     Log.e(TAG, "Failed to get category contents: code=${e.errorCode}, message=${e.message}")
-                    callback.onError(e.errorCode, e.message ?: "Failed to get category contents")
+                    throw e
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to get category contents", e)
-                    callback.onError(ErrorCodes.UNKNOWN, e.message ?: "Failed to get category contents")
+                    throw PluginException(ErrorCodes.UNKNOWN, e.message ?: "Failed to get category contents")
                 }
             }
         }
         
         // ==================== Library ====================
         
-        override fun getLibrarySongs(cursor: String?, limit: Int, callback: IResultCallback) {
+        override fun getLibrarySongs(cursor: String?, limit: Int, callback: ISongsCallback) {
             Log.d(TAG, "getLibrarySongs() called: cursor=$cursor, limit=$limit")
             scope.launch {
                 try {
                     val result = getPlugin().getLibrarySongs(cursor, limit)
                     Log.d(TAG, "Library songs completed: count=${result.items.size}, nextCursor=${result.nextCursor}")
-                    callback.onSongsResult(result.items, result.nextCursor)
+                    callback.onSuccess(result.items, result.nextCursor)
                 } catch (e: PluginException) {
                     Log.e(TAG, "Failed to get library songs: code=${e.errorCode}, message=${e.message}")
-                    callback.onError(e.errorCode, e.message ?: "Failed to get library songs")
+                    throw e
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to get library songs", e)
-                    callback.onError(ErrorCodes.UNKNOWN, e.message ?: "Failed to get library songs")
+                    throw PluginException(ErrorCodes.UNKNOWN, e.message ?: "Failed to get library songs")
                 }
             }
         }
         
-        override fun getLibraryAlbums(cursor: String?, limit: Int, callback: IResultCallback) {
+        override fun getLibraryAlbums(cursor: String?, limit: Int, callback: IAlbumsCallback) {
             Log.d(TAG, "getLibraryAlbums() called: cursor=$cursor, limit=$limit")
             scope.launch {
                 try {
                     val result = getPlugin().getLibraryAlbums(cursor, limit)
                     Log.d(TAG, "Library albums completed: count=${result.items.size}, nextCursor=${result.nextCursor}")
-                    callback.onAlbumsResult(result.items, result.nextCursor)
+                    callback.onSuccess(result.items, result.nextCursor)
                 } catch (e: PluginException) {
                     Log.e(TAG, "Failed to get library albums: code=${e.errorCode}, message=${e.message}")
-                    callback.onError(e.errorCode, e.message ?: "Failed to get library albums")
+                    throw e
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to get library albums", e)
-                    callback.onError(ErrorCodes.UNKNOWN, e.message ?: "Failed to get library albums")
+                    throw PluginException(ErrorCodes.UNKNOWN, e.message ?: "Failed to get library albums")
                 }
             }
         }
         
-        override fun getLibraryArtists(cursor: String?, limit: Int, callback: IResultCallback) {
+        override fun getLibraryArtists(cursor: String?, limit: Int, callback: IArtistsCallback) {
             Log.d(TAG, "getLibraryArtists() called: cursor=$cursor, limit=$limit")
             scope.launch {
                 try {
                     val result = getPlugin().getLibraryArtists(cursor, limit)
                     Log.d(TAG, "Library artists completed: count=${result.items.size}, nextCursor=${result.nextCursor}")
-                    callback.onArtistsResult(result.items, result.nextCursor)
+                    callback.onSuccess(result.items, result.nextCursor)
                 } catch (e: PluginException) {
                     Log.e(TAG, "Failed to get library artists: code=${e.errorCode}, message=${e.message}")
-                    callback.onError(e.errorCode, e.message ?: "Failed to get library artists")
+                    throw e
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to get library artists", e)
-                    callback.onError(ErrorCodes.UNKNOWN, e.message ?: "Failed to get library artists")
+                    throw PluginException(ErrorCodes.UNKNOWN, e.message ?: "Failed to get library artists")
                 }
             }
         }
         
-        override fun getLibraryPlaylists(cursor: String?, limit: Int, callback: IResultCallback) {
+        override fun getLibraryPlaylists(cursor: String?, limit: Int, callback: IPlaylistsCallback) {
             Log.d(TAG, "getLibraryPlaylists() called: cursor=$cursor, limit=$limit")
             scope.launch {
                 try {
                     val result = getPlugin().getLibraryPlaylists(cursor, limit)
                     Log.d(TAG, "Library playlists completed: count=${result.items.size}, nextCursor=${result.nextCursor}")
-                    callback.onPlaylistsResult(result.items, result.nextCursor)
+                    callback.onSuccess(result.items, result.nextCursor)
                 } catch (e: PluginException) {
                     Log.e(TAG, "Failed to get library playlists: code=${e.errorCode}, message=${e.message}")
-                    callback.onError(e.errorCode, e.message ?: "Failed to get library playlists")
+                    throw e
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to get library playlists", e)
-                    callback.onError(ErrorCodes.UNKNOWN, e.message ?: "Failed to get library playlists")
+                    throw PluginException(ErrorCodes.UNKNOWN, e.message ?: "Failed to get library playlists")
                 }
             }
         }
         
         // ==================== Details ====================
         
-        override fun getSong(mediaId: MediaId, callback: IResultCallback) {
+        override fun getSong(mediaId: MediaId, callback: ISongCallback) {
             Log.d(TAG, "getSong() called: mediaId=${mediaId.pluginId}:${mediaId.sourceId}")
             scope.launch {
                 try {
                     val song = getPlugin().getSong(mediaId)
                     Log.d(TAG, "getSong() completed: title=${song.title}")
-                    callback.onSongResult(song)
+                    callback.onSuccess(song)
                 } catch (e: PluginException) {
                     Log.e(TAG, "Failed to get song: code=${e.errorCode}, message=${e.message}")
-                    callback.onError(e.errorCode, e.message ?: "Failed to get song")
+                    throw e
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to get song", e)
-                    callback.onError(ErrorCodes.UNKNOWN, e.message ?: "Failed to get song")
+                    throw PluginException(ErrorCodes.UNKNOWN, e.message ?: "Failed to get song")
                 }
             }
         }
         
-        override fun getAlbum(mediaId: MediaId, callback: IResultCallback) {
+        override fun getAlbum(mediaId: MediaId, callback: IAlbumCallback) {
             Log.d(TAG, "getAlbum() called: mediaId=${mediaId.pluginId}:${mediaId.sourceId}")
             scope.launch {
                 try {
                     val album = getPlugin().getAlbum(mediaId)
                     Log.d(TAG, "getAlbum() completed: name=${album.name}")
-                    callback.onAlbumResult(album)
+                    callback.onSuccess(album)
                 } catch (e: PluginException) {
                     Log.e(TAG, "Failed to get album: code=${e.errorCode}, message=${e.message}")
-                    callback.onError(e.errorCode, e.message ?: "Failed to get album")
+                    throw e
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to get album", e)
-                    callback.onError(ErrorCodes.UNKNOWN, e.message ?: "Failed to get album")
+                    throw PluginException(ErrorCodes.UNKNOWN, e.message ?: "Failed to get album")
                 }
             }
         }
         
-        override fun getArtist(mediaId: MediaId, callback: IResultCallback) {
+        override fun getArtist(mediaId: MediaId, callback: IArtistCallback) {
             Log.d(TAG, "getArtist() called: mediaId=${mediaId.pluginId}:${mediaId.sourceId}")
             scope.launch {
                 try {
                     val artist = getPlugin().getArtist(mediaId)
                     Log.d(TAG, "getArtist() completed: name=${artist.name}")
-                    callback.onArtistResult(artist)
+                    callback.onSuccess(artist)
                 } catch (e: PluginException) {
                     Log.e(TAG, "Failed to get artist: code=${e.errorCode}, message=${e.message}")
-                    callback.onError(e.errorCode, e.message ?: "Failed to get artist")
+                    throw e
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to get artist", e)
-                    callback.onError(ErrorCodes.UNKNOWN, e.message ?: "Failed to get artist")
+                    throw PluginException(ErrorCodes.UNKNOWN, e.message ?: "Failed to get artist")
                 }
             }
         }
@@ -316,20 +313,20 @@ abstract class ViperPluginService : Service() {
             artistId: MediaId,
             cursor: String?,
             limit: Int,
-            callback: IResultCallback
+            callback: ISongsCallback
         ) {
             Log.d(TAG, "getArtistSongs() called: artistId=${artistId.pluginId}:${artistId.sourceId}, cursor=$cursor, limit=$limit")
             scope.launch {
                 try {
                     val result = getPlugin().getArtistSongs(artistId, cursor, limit)
                     Log.d(TAG, "getArtistSongs() completed: count=${result.items.size}, nextCursor=${result.nextCursor}")
-                    callback.onSongsResult(result.items, result.nextCursor)
+                    callback.onSuccess(result.items, result.nextCursor)
                 } catch (e: PluginException) {
                     Log.e(TAG, "Failed to get artist songs: code=${e.errorCode}, message=${e.message}")
-                    callback.onError(e.errorCode, e.message ?: "Failed to get artist songs")
+                    throw e
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to get artist songs", e)
-                    callback.onError(ErrorCodes.UNKNOWN, e.message ?: "Failed to get artist songs")
+                    throw PluginException(ErrorCodes.UNKNOWN, e.message ?: "Failed to get artist songs")
                 }
             }
         }
@@ -338,37 +335,37 @@ abstract class ViperPluginService : Service() {
             artistId: MediaId,
             cursor: String?,
             limit: Int,
-            callback: IResultCallback
+            callback: IAlbumsCallback
         ) {
             Log.d(TAG, "getArtistAlbums() called: artistId=${artistId.pluginId}:${artistId.sourceId}, cursor=$cursor, limit=$limit")
             scope.launch {
                 try {
                     val result = getPlugin().getArtistAlbums(artistId, cursor, limit)
                     Log.d(TAG, "getArtistAlbums() completed: count=${result.items.size}, nextCursor=${result.nextCursor}")
-                    callback.onAlbumsResult(result.items, result.nextCursor)
+                    callback.onSuccess(result.items, result.nextCursor)
                 } catch (e: PluginException) {
                     Log.e(TAG, "Failed to get artist albums: code=${e.errorCode}, message=${e.message}")
-                    callback.onError(e.errorCode, e.message ?: "Failed to get artist albums")
+                    throw e
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to get artist albums", e)
-                    callback.onError(ErrorCodes.UNKNOWN, e.message ?: "Failed to get artist albums")
+                    throw PluginException(ErrorCodes.UNKNOWN, e.message ?: "Failed to get artist albums")
                 }
             }
         }
         
-        override fun getPlaylist(mediaId: MediaId, callback: IResultCallback) {
+        override fun getPlaylist(mediaId: MediaId, callback: IPlaylistCallback) {
             Log.d(TAG, "getPlaylist() called: mediaId=${mediaId.pluginId}:${mediaId.sourceId}")
             scope.launch {
                 try {
                     val playlist = getPlugin().getPlaylist(mediaId)
                     Log.d(TAG, "getPlaylist() completed: name=${playlist.name}")
-                    callback.onPlaylistResult(playlist)
+                    callback.onSuccess(playlist)
                 } catch (e: PluginException) {
                     Log.e(TAG, "Failed to get playlist: code=${e.errorCode}, message=${e.message}")
-                    callback.onError(e.errorCode, e.message ?: "Failed to get playlist")
+                    throw e
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to get playlist", e)
-                    callback.onError(ErrorCodes.UNKNOWN, e.message ?: "Failed to get playlist")
+                    throw PluginException(ErrorCodes.UNKNOWN, e.message ?: "Failed to get playlist")
                 }
             }
         }
@@ -377,40 +374,40 @@ abstract class ViperPluginService : Service() {
             playlistId: MediaId,
             cursor: String?,
             limit: Int,
-            callback: IResultCallback
+            callback: ISongsCallback
         ) {
             Log.d(TAG, "getPlaylistSongs() called: playlistId=${playlistId.pluginId}:${playlistId.sourceId}, cursor=$cursor, limit=$limit")
             scope.launch {
                 try {
                     val result = getPlugin().getPlaylistSongs(playlistId, cursor, limit)
                     Log.d(TAG, "getPlaylistSongs() completed: count=${result.items.size}, nextCursor=${result.nextCursor}")
-                    callback.onSongsResult(result.items, result.nextCursor)
+                    callback.onSuccess(result.items, result.nextCursor)
                 } catch (e: PluginException) {
                     Log.e(TAG, "Failed to get playlist songs: code=${e.errorCode}, message=${e.message}")
-                    callback.onError(e.errorCode, e.message ?: "Failed to get playlist songs")
+                    throw e
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to get playlist songs", e)
-                    callback.onError(ErrorCodes.UNKNOWN, e.message ?: "Failed to get playlist songs")
+                    throw PluginException(ErrorCodes.UNKNOWN, e.message ?: "Failed to get playlist songs")
                 }
             }
         }
         
         // ==================== Audio Streaming ====================
         
-        override fun getAudioStream(mediaId: MediaId, callback: IResultCallback) {
+        override fun getAudioStream(mediaId: MediaId, callback: IAudioStreamCallback) {
             Log.d(TAG, "getAudioStream() called: mediaId=${mediaId.pluginId}:${mediaId.sourceId}")
             scope.launch {
                 try {
                     val writer = getPlugin().getAudioStream(mediaId)
                     activeStreams[writer.streamId] = writer
                     Log.d(TAG, "Audio stream created: streamId=${writer.streamId}, format=${writer.format}, duration=${writer.durationMs}ms")
-                    callback.onAudioStreamReady(writer.audioStream)
+                    callback.onSuccess(writer.audioStream)
                 } catch (e: PluginException) {
                     Log.e(TAG, "Failed to get audio stream: code=${e.errorCode}, message=${e.message}")
-                    callback.onAudioStreamError(e.errorCode, e.message ?: "Failed to get audio stream")
+                    throw e
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to get audio stream", e)
-                    callback.onAudioStreamError(ErrorCodes.UNKNOWN, e.message ?: "Failed to get audio stream")
+                    throw PluginException(ErrorCodes.UNKNOWN, e.message ?: "Failed to get audio stream")
                 }
             }
         }
@@ -495,4 +492,3 @@ abstract class ViperPluginService : Service() {
         Log.d(TAG, "onDestroy() completed")
     }
 }
-

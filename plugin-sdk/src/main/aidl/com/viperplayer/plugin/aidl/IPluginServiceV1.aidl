@@ -9,7 +9,17 @@ import com.viperplayer.plugin.aidl.Album;
 import com.viperplayer.plugin.aidl.Artist;
 import com.viperplayer.plugin.aidl.Playlist;
 import com.viperplayer.plugin.aidl.BrowseCategory;
-import com.viperplayer.plugin.aidl.IResultCallback;
+import com.viperplayer.plugin.aidl.ISearchCallback;
+import com.viperplayer.plugin.aidl.ICategoriesCallback;
+import com.viperplayer.plugin.aidl.ISongsCallback;
+import com.viperplayer.plugin.aidl.IAlbumsCallback;
+import com.viperplayer.plugin.aidl.IArtistsCallback;
+import com.viperplayer.plugin.aidl.IPlaylistsCallback;
+import com.viperplayer.plugin.aidl.ISongCallback;
+import com.viperplayer.plugin.aidl.IAlbumCallback;
+import com.viperplayer.plugin.aidl.IArtistCallback;
+import com.viperplayer.plugin.aidl.IPlaylistCallback;
+import com.viperplayer.plugin.aidl.IAudioStreamCallback;
 import com.viperplayer.plugin.aidl.IHostCallbackV1;
 
 /**
@@ -27,9 +37,8 @@ interface IPluginServiceV1 {
     /**
      * Called when the host connects to the plugin.
      * Plugin receives a callback to communicate with the host.
-     * Returns the plugin's API version.
      */
-    int connect(IHostCallbackV1 hostCallback);
+    void connect(IHostCallbackV1 hostCallback);
     
     /**
      * Called when the host disconnects from the plugin.
@@ -52,80 +61,80 @@ interface IPluginServiceV1 {
      * @param limit Maximum results per type
      * @param callback Callback to receive results
      */
-    void search(String query, int types, String cursor, int limit, IResultCallback callback);
-    
+    void search(String query, int types, String cursor, int limit, ISearchCallback callback);
+
     // ==================== Browse / Discovery ====================
     
     /**
      * Get root browse categories (e.g., "Genres", "Moods", "New Releases").
      */
-    void getBrowseCategories(String cursor, int limit, IResultCallback callback);
-    
+    void getBrowseCategories(String cursor, int limit, ICategoriesCallback callback);
+
     /**
      * Get contents of a category.
      * @param categoryId The category to browse
      */
-    void getCategoryContents(String categoryId, String cursor, int limit, IResultCallback callback);
-    
+    void getCategoryContents(String categoryId, String cursor, int limit, ISearchCallback callback);
+
     // ==================== Library Access ====================
     
     /**
      * Get user's saved/liked songs.
      */
-    void getLibrarySongs(String cursor, int limit, IResultCallback callback);
-    
+    void getLibrarySongs(String cursor, int limit, ISongsCallback callback);
+
     /**
      * Get user's saved albums.
      */
-    void getLibraryAlbums(String cursor, int limit, IResultCallback callback);
-    
+    void getLibraryAlbums(String cursor, int limit, IAlbumsCallback callback);
+
     /**
      * Get user's followed artists.
      */
-    void getLibraryArtists(String cursor, int limit, IResultCallback callback);
-    
+    void getLibraryArtists(String cursor, int limit, IArtistsCallback callback);
+
     /**
      * Get user's playlists.
      */
-    void getLibraryPlaylists(String cursor, int limit, IResultCallback callback);
-    
+    void getLibraryPlaylists(String cursor, int limit, IPlaylistsCallback callback);
+
     // ==================== Detail Fetching ====================
     
     /**
      * Get full song details by ID.
      */
-    void getSong(in MediaId mediaId, IResultCallback callback);
-    
+    void getSong(in MediaId mediaId, ISongCallback callback);
+
     /**
      * Get album details and tracks.
      */
-    void getAlbum(in MediaId mediaId, IResultCallback callback);
-    
+    void getAlbum(in MediaId mediaId, IAlbumCallback callback);
+
     /**
      * Get artist details.
      */
-    void getArtist(in MediaId mediaId, IResultCallback callback);
-    
+    void getArtist(in MediaId mediaId, IArtistCallback callback);
+
     /**
      * Get artist's top songs.
      */
-    void getArtistSongs(in MediaId artistId, String cursor, int limit, IResultCallback callback);
-    
+    void getArtistSongs(in MediaId artistId, String cursor, int limit, ISongsCallback callback);
+
     /**
      * Get artist's albums.
      */
-    void getArtistAlbums(in MediaId artistId, String cursor, int limit, IResultCallback callback);
-    
+    void getArtistAlbums(in MediaId artistId, String cursor, int limit, IAlbumsCallback callback);
+
     /**
      * Get playlist details and tracks.
      */
-    void getPlaylist(in MediaId mediaId, IResultCallback callback);
-    
+    void getPlaylist(in MediaId mediaId, IPlaylistCallback callback);
+
     /**
      * Get playlist tracks.
      */
-    void getPlaylistSongs(in MediaId playlistId, String cursor, int limit, IResultCallback callback);
-    
+    void getPlaylistSongs(in MediaId playlistId, String cursor, int limit, ISongsCallback callback);
+
     // ==================== Audio Streaming ====================
     
     /**
@@ -134,8 +143,8 @@ interface IPluginServiceV1 {
      * @param mediaId The song to stream
      * @param callback Callback to receive the AudioStream (contains ParcelFileDescriptor)
      */
-    void getAudioStream(in MediaId mediaId, IResultCallback callback);
-    
+    void getAudioStream(in MediaId mediaId, IAudioStreamCallback callback);
+
     /**
      * Stop an active audio stream.
      * Plugin should stop decoding and close the pipe.

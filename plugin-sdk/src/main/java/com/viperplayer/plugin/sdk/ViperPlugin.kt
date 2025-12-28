@@ -1,6 +1,13 @@
 package com.viperplayer.plugin.sdk
 
-import com.viperplayer.plugin.aidl.*
+import com.viperplayer.plugin.aidl.Album
+import com.viperplayer.plugin.aidl.Artist
+import com.viperplayer.plugin.aidl.BrowseCategory
+import com.viperplayer.plugin.aidl.MediaId
+import com.viperplayer.plugin.aidl.Playlist
+import com.viperplayer.plugin.aidl.PluginCapabilities
+import com.viperplayer.plugin.aidl.SearchResult
+import com.viperplayer.plugin.aidl.Song
 
 /**
  * Base interface that plugins implement.
@@ -51,6 +58,10 @@ interface ViperPlugin {
     suspend fun onDisconnect() {}
     
     // ==================== Search ====================
+
+    suspend fun getSearchSuggestions(
+        query: String
+    ): List<String>
     
     /**
      * Search for content.

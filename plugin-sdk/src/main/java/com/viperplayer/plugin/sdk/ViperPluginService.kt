@@ -4,8 +4,28 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
-import com.viperplayer.plugin.aidl.*
-import kotlinx.coroutines.*
+import com.viperplayer.plugin.aidl.IAlbumCallback
+import com.viperplayer.plugin.aidl.IAlbumsCallback
+import com.viperplayer.plugin.aidl.IArtistCallback
+import com.viperplayer.plugin.aidl.IArtistsCallback
+import com.viperplayer.plugin.aidl.IAudioStreamCallback
+import com.viperplayer.plugin.aidl.ICategoriesCallback
+import com.viperplayer.plugin.aidl.IHostCallbackV1
+import com.viperplayer.plugin.aidl.IPlaylistCallback
+import com.viperplayer.plugin.aidl.IPlaylistsCallback
+import com.viperplayer.plugin.aidl.IPluginServiceV1
+import com.viperplayer.plugin.aidl.ISearchCallback
+import com.viperplayer.plugin.aidl.ISearchSuggestionsCallback
+import com.viperplayer.plugin.aidl.ISongCallback
+import com.viperplayer.plugin.aidl.ISongsCallback
+import com.viperplayer.plugin.aidl.MediaId
+import com.viperplayer.plugin.aidl.PluginCapabilities
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 /**
  * Base Service class for plugins.
@@ -121,6 +141,29 @@ abstract class ViperPluginService : Service() {
         }
         
         // ==================== Search ====================
+
+        override fun getSearchSuggestions(query: String, callback: ISearchSuggestionsCallback) {
+            Log.d(TAG, "getSearchSuggestions() called: query=$query")
+            scope.launch {
+                try {
+                    val suggestions = getPlugin().getSearchSuggestions(query)
+                    Log.d(TAG, "Search suggestions completed: count=${suggestions.size}")
+                    callback.onSuccess(suggestions)
+                } catch (e: PluginException) {
+                    Log.e(
+                        TAG,
+                        "Search suggestions failed with PluginException: code=${e.errorCode}, message=${e.message}"
+                    )
+                    throw e
+                } catch (e: Exception) {
+                    Log.e(TAG, "Search suggestions failed with exception", e)
+                    throw PluginException(
+                        ErrorCodes.UNKNOWN,
+                        e.message ?: "Search suggestions failed"
+                    )
+                }
+            }
+        }
         
         override fun search(
             query: String,

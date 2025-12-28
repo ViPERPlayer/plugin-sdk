@@ -10,6 +10,7 @@ import com.viperplayer.plugin.aidl.Artist;
 import com.viperplayer.plugin.aidl.Playlist;
 import com.viperplayer.plugin.aidl.BrowseCategory;
 import com.viperplayer.plugin.aidl.ISearchCallback;
+import com.viperplayer.plugin.aidl.ISearchSuggestionsCallback;
 import com.viperplayer.plugin.aidl.ICategoriesCallback;
 import com.viperplayer.plugin.aidl.ISongsCallback;
 import com.viperplayer.plugin.aidl.IAlbumsCallback;
@@ -52,6 +53,13 @@ interface IPluginServiceV1 {
     PluginCapabilities getCapabilities();
     
     // ==================== Search ====================
+
+    /**
+    * Get search suggestions for a query.
+    * @param query The search query string
+    * @param callback Callback to receive results
+    */
+    void getSearchSuggestions(String query, ISearchSuggestionsCallback callback);
     
     /**
      * Search for content across this plugin.

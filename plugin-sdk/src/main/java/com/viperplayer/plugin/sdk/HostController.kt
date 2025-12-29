@@ -1,7 +1,10 @@
 package com.viperplayer.plugin.sdk
 
 import android.util.Log
-import com.viperplayer.plugin.aidl.*
+import com.viperplayer.plugin.aidl.IHostCallbackV1
+import com.viperplayer.plugin.aidl.MediaId
+import com.viperplayer.plugin.aidl.PlayerState
+import com.viperplayer.plugin.aidl.Song
 
 /**
  * Wrapper around IHostCallbackV1 that provides a cleaner API for plugins.
@@ -13,14 +16,6 @@ class HostController internal constructor(
     companion object {
         private const val TAG = "HostController"
     }
-    
-    /** Host API version */
-    val hostApiVersion: Int
-        get() {
-            val version = callback.hostApiVersion
-            Log.d(TAG, "hostApiVersion: $version")
-            return version
-        }
     
     // ==================== Player Control ====================
     

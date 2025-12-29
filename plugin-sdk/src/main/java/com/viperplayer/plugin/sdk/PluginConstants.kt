@@ -22,9 +22,6 @@ object PluginConstants {
     /** Metadata key for plugin icon */
     const val META_PLUGIN_ICON = "com.viperplayer.plugin.ICON"
     
-    /** Current SDK API version */
-    const val CURRENT_API_VERSION = 1
-    
     /** Minimum supported API version */
     const val MIN_API_VERSION = 1
 }

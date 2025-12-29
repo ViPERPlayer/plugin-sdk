@@ -481,22 +481,6 @@ abstract class ViperPluginService : Service() {
                 }
             }
         }
-        
-        // ==================== Settings ====================
-        
-        override fun getSettingsActivityClass(): String? {
-            Log.d(TAG, "getSettingsActivityClass() called")
-            val className = getPlugin().getSettingsActivityClass()
-            Log.d(TAG, "getSettingsActivityClass() returned: $className")
-            return className
-        }
-        
-        override fun getSettingsViewClass(): String? {
-            Log.d(TAG, "getSettingsViewClass() called")
-            val className = getPlugin().getSettingsViewClass()
-            Log.d(TAG, "getSettingsViewClass() returned: $className")
-            return className
-        }
     }
     
     override fun onBind(intent: Intent?): IBinder? {

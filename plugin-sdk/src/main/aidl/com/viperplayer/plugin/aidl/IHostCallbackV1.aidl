@@ -8,15 +8,8 @@ import com.viperplayer.plugin.aidl.PlayerState;
 /**
  * Callback interface for plugins to communicate with the host app.
  * Plugins can use this to control playback, update metadata, etc.
- * 
- * API Version: 1
  */
 interface IHostCallbackV1 {
-    /**
-     * Returns the current API version supported by the host.
-     */
-    int getHostApiVersion();
-    
     // ==================== Player Control ====================
     
     /**

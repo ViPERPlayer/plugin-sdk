@@ -2,9 +2,9 @@ package com.viperplayer.plugin.sdk
 
 import android.os.ParcelFileDescriptor
 import android.util.Log
-import com.viperplayer.plugin.aidl.AudioFormat
-import com.viperplayer.plugin.aidl.AudioStream
-import com.viperplayer.plugin.aidl.MediaId
+import com.viperplayer.plugin.sdk.v1.AudioFormat
+import com.viperplayer.plugin.sdk.v1.AudioStream
+import com.viperplayer.plugin.sdk.v1.MediaId
 import java.io.Closeable
 import java.io.FileOutputStream
 import java.io.IOException

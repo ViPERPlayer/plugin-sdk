@@ -1,25 +1,25 @@
 package com.viperplayer.plugin.sdk
 
-import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
-import com.viperplayer.plugin.aidl.IAlbumCallback
-import com.viperplayer.plugin.aidl.IAlbumsCallback
-import com.viperplayer.plugin.aidl.IArtistCallback
-import com.viperplayer.plugin.aidl.IArtistsCallback
-import com.viperplayer.plugin.aidl.IAudioStreamCallback
-import com.viperplayer.plugin.aidl.ICategoriesCallback
-import com.viperplayer.plugin.aidl.IHostCallbackV1
-import com.viperplayer.plugin.aidl.IPlaylistCallback
-import com.viperplayer.plugin.aidl.IPlaylistsCallback
-import com.viperplayer.plugin.aidl.IPluginServiceV1
-import com.viperplayer.plugin.aidl.ISearchCallback
-import com.viperplayer.plugin.aidl.ISearchSuggestionsCallback
-import com.viperplayer.plugin.aidl.ISongCallback
-import com.viperplayer.plugin.aidl.ISongsCallback
-import com.viperplayer.plugin.aidl.MediaId
-import com.viperplayer.plugin.aidl.PluginCapabilities
+import com.viperplayer.plugin.sdk.v1.HostController
+import com.viperplayer.plugin.sdk.v1.IAlbumCallback
+import com.viperplayer.plugin.sdk.v1.IAlbumsCallback
+import com.viperplayer.plugin.sdk.v1.IArtistCallback
+import com.viperplayer.plugin.sdk.v1.IArtistsCallback
+import com.viperplayer.plugin.sdk.v1.IAudioStreamCallback
+import com.viperplayer.plugin.sdk.v1.ICategoriesCallback
+import com.viperplayer.plugin.sdk.v1.IHostCallbackV1
+import com.viperplayer.plugin.sdk.v1.IPlaylistCallback
+import com.viperplayer.plugin.sdk.v1.IPlaylistsCallback
+import com.viperplayer.plugin.sdk.v1.IPluginServiceV1
+import com.viperplayer.plugin.sdk.v1.ISearchCallback
+import com.viperplayer.plugin.sdk.v1.ISearchSuggestionsCallback
+import com.viperplayer.plugin.sdk.v1.ISongCallback
+import com.viperplayer.plugin.sdk.v1.ISongsCallback
+import com.viperplayer.plugin.sdk.v1.MediaId
+import com.viperplayer.plugin.sdk.v1.PluginCapabilities
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -58,7 +58,7 @@ import kotlinx.coroutines.runBlocking
  * </service>
  * ```
  */
-abstract class ViperPluginService : Service() {
+abstract class ViperPluginService : android.app.Service() {
     companion object {
         private const val TAG = "ViperPluginService"
     }
@@ -183,7 +183,10 @@ abstract class ViperPluginService : Service() {
                     throw e
                 } catch (e: Exception) {
                     Log.e(TAG, "Search failed with exception", e)
-                    throw PluginException(ErrorCodes.UNKNOWN, e.message ?: "Search failed")
+                    throw PluginException(
+                        ErrorCodes.UNKNOWN,
+                        e.message ?: "Search failed"
+                    )
                 }
             }
         }
@@ -202,7 +205,10 @@ abstract class ViperPluginService : Service() {
                     throw e
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to get browse categories", e)
-                    throw PluginException(ErrorCodes.UNKNOWN, e.message ?: "Failed to get categories")
+                    throw PluginException(
+                        ErrorCodes.UNKNOWN,
+                        e.message ?: "Failed to get categories"
+                    )
                 }
             }
         }
@@ -224,7 +230,10 @@ abstract class ViperPluginService : Service() {
                     throw e
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to get category contents", e)
-                    throw PluginException(ErrorCodes.UNKNOWN, e.message ?: "Failed to get category contents")
+                    throw PluginException(
+                        ErrorCodes.UNKNOWN,
+                        e.message ?: "Failed to get category contents"
+                    )
                 }
             }
         }
@@ -243,7 +252,10 @@ abstract class ViperPluginService : Service() {
                     throw e
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to get library songs", e)
-                    throw PluginException(ErrorCodes.UNKNOWN, e.message ?: "Failed to get library songs")
+                    throw PluginException(
+                        ErrorCodes.UNKNOWN,
+                        e.message ?: "Failed to get library songs"
+                    )
                 }
             }
         }
@@ -260,7 +272,10 @@ abstract class ViperPluginService : Service() {
                     throw e
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to get library albums", e)
-                    throw PluginException(ErrorCodes.UNKNOWN, e.message ?: "Failed to get library albums")
+                    throw PluginException(
+                        ErrorCodes.UNKNOWN,
+                        e.message ?: "Failed to get library albums"
+                    )
                 }
             }
         }
@@ -277,7 +292,10 @@ abstract class ViperPluginService : Service() {
                     throw e
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to get library artists", e)
-                    throw PluginException(ErrorCodes.UNKNOWN, e.message ?: "Failed to get library artists")
+                    throw PluginException(
+                        ErrorCodes.UNKNOWN,
+                        e.message ?: "Failed to get library artists"
+                    )
                 }
             }
         }
@@ -294,7 +312,10 @@ abstract class ViperPluginService : Service() {
                     throw e
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to get library playlists", e)
-                    throw PluginException(ErrorCodes.UNKNOWN, e.message ?: "Failed to get library playlists")
+                    throw PluginException(
+                        ErrorCodes.UNKNOWN,
+                        e.message ?: "Failed to get library playlists"
+                    )
                 }
             }
         }
@@ -313,7 +334,10 @@ abstract class ViperPluginService : Service() {
                     throw e
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to get song", e)
-                    throw PluginException(ErrorCodes.UNKNOWN, e.message ?: "Failed to get song")
+                    throw PluginException(
+                        ErrorCodes.UNKNOWN,
+                        e.message ?: "Failed to get song"
+                    )
                 }
             }
         }
@@ -330,7 +354,10 @@ abstract class ViperPluginService : Service() {
                     throw e
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to get album", e)
-                    throw PluginException(ErrorCodes.UNKNOWN, e.message ?: "Failed to get album")
+                    throw PluginException(
+                        ErrorCodes.UNKNOWN,
+                        e.message ?: "Failed to get album"
+                    )
                 }
             }
         }

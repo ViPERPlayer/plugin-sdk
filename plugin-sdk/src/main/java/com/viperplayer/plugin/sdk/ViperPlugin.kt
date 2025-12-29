@@ -1,13 +1,14 @@
 package com.viperplayer.plugin.sdk
 
-import com.viperplayer.plugin.aidl.Album
-import com.viperplayer.plugin.aidl.Artist
-import com.viperplayer.plugin.aidl.BrowseCategory
-import com.viperplayer.plugin.aidl.MediaId
-import com.viperplayer.plugin.aidl.Playlist
-import com.viperplayer.plugin.aidl.PluginCapabilities
-import com.viperplayer.plugin.aidl.SearchResult
-import com.viperplayer.plugin.aidl.Song
+import com.viperplayer.plugin.sdk.v1.Album
+import com.viperplayer.plugin.sdk.v1.Artist
+import com.viperplayer.plugin.sdk.v1.BrowseCategory
+import com.viperplayer.plugin.sdk.v1.HostController
+import com.viperplayer.plugin.sdk.v1.MediaId
+import com.viperplayer.plugin.sdk.v1.Playlist
+import com.viperplayer.plugin.sdk.v1.PluginCapabilities
+import com.viperplayer.plugin.sdk.v1.SearchResult
+import com.viperplayer.plugin.sdk.v1.Song
 
 /**
  * Base interface that plugins implement.

@@ -1,10 +1,7 @@
-package com.viperplayer.plugin.sdk
+package com.viperplayer.plugin.sdk.v1
 
 import android.util.Log
-import com.viperplayer.plugin.aidl.IHostCallbackV1
-import com.viperplayer.plugin.aidl.MediaId
-import com.viperplayer.plugin.aidl.PlayerState
-import com.viperplayer.plugin.aidl.Song
+import com.viperplayer.plugin.sdk.PluginException
 
 /**
  * Wrapper around IHostCallbackV1 that provides a cleaner API for plugins.

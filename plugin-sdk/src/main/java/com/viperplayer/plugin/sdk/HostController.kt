@@ -162,7 +162,7 @@ class HostController internal constructor(
      */
     fun reportError(exception: PluginException) {
         Log.e(TAG, "reportError() called: code=${exception.errorCode}, message=${exception.message}")
-        callback.reportError(exception.errorCode, exception.message ?: "Unknown error")
+        callback.reportError(exception.errorCode, exception.message )
     }
 }
 

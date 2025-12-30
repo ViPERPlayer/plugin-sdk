@@ -1,7 +1,7 @@
 package com.viperplayer.plugin.sdk.v1
 
-import android.os.Parcel
 import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
 /**
  * Current state of the host player.
@@ -16,6 +16,7 @@ import android.os.Parcelable
  * @property queueSize Number of songs in the queue
  * @property queuePosition Current position in the queue (0-indexed)
  */
+@Parcelize
 data class PlayerState(
     val state: PlaybackState = PlaybackState.IDLE,
     val currentSong: Song? = null,
@@ -27,33 +28,6 @@ data class PlayerState(
     val queueSize: Int = 0,
     val queuePosition: Int = 0
 ) : Parcelable {
-    
-    constructor(parcel: Parcel) : this(
-        state = PlaybackState.entries[parcel.readInt()],
-        currentSong = parcel.readParcelable(Song::class.java.classLoader),
-        positionMs = parcel.readLong(),
-        durationMs = parcel.readLong(),
-        shuffleEnabled = parcel.readInt() != 0,
-        repeatMode = RepeatMode.entries[parcel.readInt()],
-        volume = parcel.readFloat(),
-        queueSize = parcel.readInt(),
-        queuePosition = parcel.readInt()
-    )
-    
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(state.ordinal)
-        parcel.writeParcelable(currentSong, flags)
-        parcel.writeLong(positionMs)
-        parcel.writeLong(durationMs)
-        parcel.writeInt(if (shuffleEnabled) 1 else 0)
-        parcel.writeInt(repeatMode.ordinal)
-        parcel.writeFloat(volume)
-        parcel.writeInt(queueSize)
-        parcel.writeInt(queuePosition)
-    }
-    
-    override fun describeContents(): Int = 0
-    
     val isPlaying: Boolean
         get() = state == PlaybackState.PLAYING
     
@@ -66,10 +40,7 @@ data class PlayerState(
     val progress: Float
         get() = if (durationMs > 0) positionMs.toFloat() / durationMs else 0f
     
-    companion object CREATOR : Parcelable.Creator<PlayerState> {
-        override fun createFromParcel(parcel: Parcel): PlayerState = PlayerState(parcel)
-        override fun newArray(size: Int): Array<PlayerState?> = arrayOfNulls(size)
-        
+    companion object {
         val IDLE = PlayerState()
     }
 }
@@ -103,4 +74,3 @@ enum class RepeatMode {
     /** Repeat entire queue */
     ALL
 }
-

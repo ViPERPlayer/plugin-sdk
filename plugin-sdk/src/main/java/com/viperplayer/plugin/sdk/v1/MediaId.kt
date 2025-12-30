@@ -1,7 +1,7 @@
 package com.viperplayer.plugin.sdk.v1
 
-import android.os.Parcel
 import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
 /**
  * Composite key for uniquely identifying media across plugins.
@@ -10,32 +10,17 @@ import android.os.Parcelable
  * @property pluginId The unique identifier of the plugin
  * @property sourceId The source-specific identifier (e.g., a streaming service track ID)
  */
+@Parcelize
 data class MediaId(
     val pluginId: String,
     val sourceId: String
 ) : Parcelable {
-    
-    constructor(parcel: Parcel) : this(
-        pluginId = parcel.readString() ?: "",
-        sourceId = parcel.readString() ?: ""
-    )
-    
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(pluginId)
-        parcel.writeString(sourceId)
-    }
-    
-    override fun describeContents(): Int = 0
-    
     /**
      * Returns the composite key string.
      */
     override fun toString(): String = "$pluginId:$sourceId"
     
-    companion object CREATOR : Parcelable.Creator<MediaId> {
-        override fun createFromParcel(parcel: Parcel): MediaId = MediaId(parcel)
-        override fun newArray(size: Int): Array<MediaId?> = arrayOfNulls(size)
-        
+    companion object {
         /**
          * Parse a composite key string into a MediaId.
          * @throws IllegalArgumentException if the format is invalid
@@ -47,4 +32,3 @@ data class MediaId(
         }
     }
 }
-

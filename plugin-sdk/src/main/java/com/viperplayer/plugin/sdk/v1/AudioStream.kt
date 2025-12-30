@@ -1,8 +1,8 @@
 package com.viperplayer.plugin.sdk.v1
 
-import android.os.Parcel
 import android.os.ParcelFileDescriptor
 import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
 /**
  * Represents an active audio stream from a plugin.
@@ -21,6 +21,7 @@ import android.os.Parcelable
  * @property pipe File descriptor for reading PCM data (host reads from this)
  * @property canSeek Whether this stream supports seeking
  */
+@Parcelize
 data class AudioStream(
     val streamId: String,
     val mediaId: MediaId,
@@ -28,31 +29,4 @@ data class AudioStream(
     val durationMs: Long,
     val pipe: ParcelFileDescriptor,
     val canSeek: Boolean = true
-) : Parcelable {
-    
-    constructor(parcel: Parcel) : this(
-        streamId = parcel.readString() ?: "",
-        mediaId = parcel.readParcelable(MediaId::class.java.classLoader)!!,
-        format = parcel.readParcelable(AudioFormat::class.java.classLoader)!!,
-        durationMs = parcel.readLong(),
-        pipe = parcel.readParcelable(ParcelFileDescriptor::class.java.classLoader)!!,
-        canSeek = parcel.readInt() != 0
-    )
-    
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(streamId)
-        parcel.writeParcelable(mediaId, flags)
-        parcel.writeParcelable(format, flags)
-        parcel.writeLong(durationMs)
-        parcel.writeParcelable(pipe, flags)
-        parcel.writeInt(if (canSeek) 1 else 0)
-    }
-    
-    override fun describeContents(): Int = Parcelable.CONTENTS_FILE_DESCRIPTOR
-    
-    companion object CREATOR : Parcelable.Creator<AudioStream> {
-        override fun createFromParcel(parcel: Parcel): AudioStream = AudioStream(parcel)
-        override fun newArray(size: Int): Array<AudioStream?> = arrayOfNulls(size)
-    }
-}
-
+) : Parcelable

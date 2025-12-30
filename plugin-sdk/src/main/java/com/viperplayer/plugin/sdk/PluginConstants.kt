@@ -10,9 +10,6 @@ object PluginConstants {
     /** Permission that plugins must declare */
     const val PERMISSION_PLUGIN = "com.viperplayer.permission.PLUGIN"
     
-    /** Metadata key for plugin API version */
-    const val META_API_VERSION = "com.viperplayer.plugin.API_VERSION"
-    
     /** Metadata key for plugin name */
     const val META_PLUGIN_NAME = "com.viperplayer.plugin.NAME"
     
@@ -30,9 +27,6 @@ object PluginConstants {
  * Error codes for plugin operations.
  */
 object ErrorCodes {
-    /** Operation completed successfully */
-    const val SUCCESS = 0
-    
     /** Unknown/generic error */
     const val UNKNOWN = -1
     

@@ -1,7 +1,7 @@
 package com.viperplayer.plugin.sdk.v1
 
-import android.os.Parcel
 import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
 /**
  * Represents a song/track.
@@ -20,12 +20,13 @@ import android.os.Parcelable
  * @property releaseYear Year the song was released
  * @property genres Genres associated with this song
  */
+@Parcelize
 data class Song(
-    val id: MediaId,
+    val id: String,
     val title: String,
     val artists: List<Artist> = emptyList(),
     val album: Album? = null,
-    val durationMs: Long = 0,
+    val durationMs: Long? = 0,
     val artworkUrl: String? = null,
     val trackNumber: Int? = null,
     val discNumber: Int? = null,
@@ -34,43 +35,6 @@ data class Song(
     val releaseYear: Int? = null,
     val genres: List<String> = emptyList()
 ) : Parcelable {
-    
-    constructor(parcel: Parcel) : this(
-        id = parcel.readParcelable(MediaId::class.java.classLoader)!!,
-        title = parcel.readString() ?: "",
-        artists = mutableListOf<Artist>().apply {
-            parcel.readTypedList(this, Artist.CREATOR)
-        },
-        album = parcel.readParcelable(Album::class.java.classLoader),
-        durationMs = parcel.readLong(),
-        artworkUrl = parcel.readString(),
-        trackNumber = parcel.readValue(Int::class.java.classLoader) as? Int,
-        discNumber = parcel.readValue(Int::class.java.classLoader) as? Int,
-        isExplicit = parcel.readInt() != 0,
-        isPlayable = parcel.readInt() != 0,
-        releaseYear = parcel.readValue(Int::class.java.classLoader) as? Int,
-        genres = mutableListOf<String>().apply {
-            parcel.readStringList(this)
-        }
-    )
-    
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeParcelable(id, flags)
-        parcel.writeString(title)
-        parcel.writeTypedList(artists)
-        parcel.writeParcelable(album, flags)
-        parcel.writeLong(durationMs)
-        parcel.writeString(artworkUrl)
-        parcel.writeValue(trackNumber)
-        parcel.writeValue(discNumber)
-        parcel.writeInt(if (isExplicit) 1 else 0)
-        parcel.writeInt(if (isPlayable) 1 else 0)
-        parcel.writeValue(releaseYear)
-        parcel.writeStringList(genres)
-    }
-    
-    override fun describeContents(): Int = 0
-    
     /** Primary artist name for display */
     val artistName: String
         get() = artists.firstOrNull()?.name ?: "Unknown Artist"
@@ -82,23 +46,4 @@ data class Song(
     /** Effective artwork URL (song's own or album's) */
     val effectiveArtworkUrl: String?
         get() = artworkUrl ?: album?.artworkUrl
-    
-    /** Duration formatted as MM:SS or HH:MM:SS */
-    val durationFormatted: String
-        get() {
-            val seconds = (durationMs / 1000) % 60
-            val minutes = (durationMs / (1000 * 60)) % 60
-            val hours = durationMs / (1000 * 60 * 60)
-            return if (hours > 0) {
-                String.format("%d:%02d:%02d", hours, minutes, seconds)
-            } else {
-                String.format("%d:%02d", minutes, seconds)
-            }
-        }
-    
-    companion object CREATOR : Parcelable.Creator<Song> {
-        override fun createFromParcel(parcel: Parcel): Song = Song(parcel)
-        override fun newArray(size: Int): Array<Song?> = arrayOfNulls(size)
-    }
 }
-

@@ -3,11 +3,12 @@ package com.viperplayer.plugin.sdk
 import com.viperplayer.plugin.sdk.v1.Album
 import com.viperplayer.plugin.sdk.v1.Artist
 import com.viperplayer.plugin.sdk.v1.BrowseCategory
-import com.viperplayer.plugin.sdk.v1.HostController
+import com.viperplayer.plugin.sdk.v1.IHostCallbackV1
 import com.viperplayer.plugin.sdk.v1.MediaId
 import com.viperplayer.plugin.sdk.v1.Playlist
 import com.viperplayer.plugin.sdk.v1.PluginCapabilities
 import com.viperplayer.plugin.sdk.v1.SearchResult
+import com.viperplayer.plugin.sdk.v1.SearchSuggestionsResultV1
 import com.viperplayer.plugin.sdk.v1.Song
 
 /**
@@ -35,7 +36,6 @@ import com.viperplayer.plugin.sdk.v1.Song
  * ```
  */
 interface ViperPlugin {
-    
     // ==================== Plugin Info ====================
     
     /**
@@ -51,7 +51,7 @@ interface ViperPlugin {
      * Called when the host connects to this plugin.
      * @param host Controller for communicating with the host
      */
-    suspend fun onConnect(host: HostController) {}
+    suspend fun onConnect(hostCallback: IHostCallbackV1) {}
     
     /**
      * Called when the host disconnects from this plugin.
@@ -60,10 +60,10 @@ interface ViperPlugin {
     
     // ==================== Search ====================
 
-    suspend fun getSearchSuggestions(
+    abstract suspend fun getSearchSuggestions(
         query: String
-    ): List<String>
-    
+    ): SearchSuggestionsResultV1
+
     /**
      * Search for content.
      * 
@@ -73,7 +73,7 @@ interface ViperPlugin {
      * @param limit Maximum results per type
      * @return Search results
      */
-    suspend fun search(
+    abstract suspend fun search(
         query: String,
         types: Int = SearchResult.TYPE_ALL,
         cursor: String? = null,
@@ -138,17 +138,17 @@ interface ViperPlugin {
     /**
      * Get song details.
      */
-    suspend fun getSong(mediaId: MediaId): Song
+    abstract suspend fun getSong(mediaId: MediaId): Song
     
     /**
      * Get album details with tracks.
      */
-    suspend fun getAlbum(mediaId: MediaId): Album
+    abstract suspend fun getAlbum(mediaId: MediaId): Album
     
     /**
      * Get artist details.
      */
-    suspend fun getArtist(mediaId: MediaId): Artist
+    abstract suspend fun getArtist(mediaId: MediaId): Artist
     
     /**
      * Get artist's songs.
@@ -171,7 +171,7 @@ interface ViperPlugin {
     /**
      * Get playlist details with tracks.
      */
-    suspend fun getPlaylist(mediaId: MediaId): Playlist
+    abstract suspend fun getPlaylist(mediaId: MediaId): Playlist
     
     /**
      * Get playlist songs.
@@ -206,7 +206,7 @@ interface ViperPlugin {
      * }
      * ```
      */
-    suspend fun getAudioStream(mediaId: MediaId): AudioStreamWriter
+    abstract suspend fun getAudioStream(mediaId: MediaId): AudioStreamWriter
     
     /**
      * Stop an active audio stream.

@@ -1,7 +1,7 @@
 package com.viperplayer.plugin.sdk.v1
 
-import android.os.Parcel
 import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
 /**
  * Represents a browsable category for discovery.
@@ -13,6 +13,7 @@ import android.os.Parcelable
  * @property imageUrl URL to category image
  * @property contentType What type of content this category contains
  */
+@Parcelize
 data class BrowseCategory(
     val id: String,
     val pluginId: String,
@@ -20,33 +21,7 @@ data class BrowseCategory(
     val description: String? = null,
     val imageUrl: String? = null,
     val contentType: CategoryContentType = CategoryContentType.MIXED
-) : Parcelable {
-    
-    constructor(parcel: Parcel) : this(
-        id = parcel.readString() ?: "",
-        pluginId = parcel.readString() ?: "",
-        name = parcel.readString() ?: "",
-        description = parcel.readString(),
-        imageUrl = parcel.readString(),
-        contentType = CategoryContentType.entries[parcel.readInt()]
-    )
-    
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(id)
-        parcel.writeString(pluginId)
-        parcel.writeString(name)
-        parcel.writeString(description)
-        parcel.writeString(imageUrl)
-        parcel.writeInt(contentType.ordinal)
-    }
-    
-    override fun describeContents(): Int = 0
-    
-    companion object CREATOR : Parcelable.Creator<BrowseCategory> {
-        override fun createFromParcel(parcel: Parcel): BrowseCategory = BrowseCategory(parcel)
-        override fun newArray(size: Int): Array<BrowseCategory?> = arrayOfNulls(size)
-    }
-}
+) : Parcelable
 
 /**
  * Describes what type of content a category contains.
@@ -65,4 +40,3 @@ enum class CategoryContentType {
     /** Contains mixed content types */
     MIXED
 }
-

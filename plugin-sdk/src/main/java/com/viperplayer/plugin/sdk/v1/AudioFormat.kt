@@ -1,7 +1,7 @@
 package com.viperplayer.plugin.sdk.v1
 
-import android.os.Parcel
 import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
 /**
  * Describes the PCM audio format for streaming.
@@ -11,29 +11,13 @@ import android.os.Parcelable
  * @property encoding PCM encoding type
  * @property bitDepth Bits per sample (16, 24, or 32)
  */
+@Parcelize
 data class AudioFormat(
     val sampleRate: Int = 44100,
     val channelCount: Int = 2,
     val encoding: PcmEncoding = PcmEncoding.PCM_16BIT,
     val bitDepth: Int = 16
 ) : Parcelable {
-    
-    constructor(parcel: Parcel) : this(
-        sampleRate = parcel.readInt(),
-        channelCount = parcel.readInt(),
-        encoding = PcmEncoding.entries[parcel.readInt()],
-        bitDepth = parcel.readInt()
-    )
-    
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(sampleRate)
-        parcel.writeInt(channelCount)
-        parcel.writeInt(encoding.ordinal)
-        parcel.writeInt(bitDepth)
-    }
-    
-    override fun describeContents(): Int = 0
-    
     /** Bytes per sample (all channels) */
     val bytesPerFrame: Int
         get() = channelCount * (bitDepth / 8)
@@ -42,10 +26,7 @@ data class AudioFormat(
     val bytesPerSecond: Int
         get() = sampleRate * bytesPerFrame
     
-    companion object CREATOR : Parcelable.Creator<AudioFormat> {
-        override fun createFromParcel(parcel: Parcel): AudioFormat = AudioFormat(parcel)
-        override fun newArray(size: Int): Array<AudioFormat?> = arrayOfNulls(size)
-        
+    companion object {
         /** Standard CD quality */
         val CD_QUALITY = AudioFormat(44100, 2, PcmEncoding.PCM_16BIT, 16)
         
@@ -65,4 +46,3 @@ enum class PcmEncoding {
     /** 32-bit floating point PCM */
     PCM_FLOAT
 }
-

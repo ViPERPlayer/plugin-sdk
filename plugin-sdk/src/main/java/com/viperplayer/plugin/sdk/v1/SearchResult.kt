@@ -1,7 +1,7 @@
 package com.viperplayer.plugin.sdk.v1
 
-import android.os.Parcel
 import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
 /**
  * Paginated search results containing multiple result types.
@@ -16,6 +16,7 @@ import android.os.Parcelable
  * @property totalArtists Total number of matching artists (if known)
  * @property totalPlaylists Total number of matching playlists (if known)
  */
+@Parcelize
 data class SearchResult(
     val songs: List<Song> = emptyList(),
     val albums: List<Album> = emptyList(),
@@ -27,51 +28,13 @@ data class SearchResult(
     val totalArtists: Int? = null,
     val totalPlaylists: Int? = null
 ) : Parcelable {
-    
-    constructor(parcel: Parcel) : this(
-        songs = mutableListOf<Song>().apply {
-            parcel.readTypedList(this, Song.CREATOR)
-        },
-        albums = mutableListOf<Album>().apply {
-            parcel.readTypedList(this, Album.CREATOR)
-        },
-        artists = mutableListOf<Artist>().apply {
-            parcel.readTypedList(this, Artist.CREATOR)
-        },
-        playlists = mutableListOf<Playlist>().apply {
-            parcel.readTypedList(this, Playlist.CREATOR)
-        },
-        nextCursor = parcel.readString(),
-        totalSongs = parcel.readValue(Int::class.java.classLoader) as? Int,
-        totalAlbums = parcel.readValue(Int::class.java.classLoader) as? Int,
-        totalArtists = parcel.readValue(Int::class.java.classLoader) as? Int,
-        totalPlaylists = parcel.readValue(Int::class.java.classLoader) as? Int
-    )
-    
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeTypedList(songs)
-        parcel.writeTypedList(albums)
-        parcel.writeTypedList(artists)
-        parcel.writeTypedList(playlists)
-        parcel.writeString(nextCursor)
-        parcel.writeValue(totalSongs)
-        parcel.writeValue(totalAlbums)
-        parcel.writeValue(totalArtists)
-        parcel.writeValue(totalPlaylists)
-    }
-    
-    override fun describeContents(): Int = 0
-    
     val isEmpty: Boolean
         get() = songs.isEmpty() && albums.isEmpty() && artists.isEmpty() && playlists.isEmpty()
     
     val hasMore: Boolean
         get() = nextCursor != null
     
-    companion object CREATOR : Parcelable.Creator<SearchResult> {
-        override fun createFromParcel(parcel: Parcel): SearchResult = SearchResult(parcel)
-        override fun newArray(size: Int): Array<SearchResult?> = arrayOfNulls(size)
-        
+    companion object {
         /** Search type flags */
         const val TYPE_SONG = 1
         const val TYPE_ALBUM = 2
@@ -80,4 +43,3 @@ data class SearchResult(
         const val TYPE_ALL = TYPE_SONG or TYPE_ALBUM or TYPE_ARTIST or TYPE_PLAYLIST
     }
 }
-

@@ -1,7 +1,7 @@
 package com.viperplayer.plugin.sdk.v1
 
-import android.os.Parcel
 import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
 /**
  * Metadata about a plugin.
@@ -14,6 +14,7 @@ import android.os.Parcelable
  * @property author Plugin author/developer name (optional)
  * @property iconUrl URL to plugin icon (optional)
  */
+@Parcelize
 data class PluginInfo(
     val id: String,
     val name: String,
@@ -23,35 +24,8 @@ data class PluginInfo(
     val author: String? = null,
     val iconUrl: String? = null,
 ) : Parcelable {
-    
-    constructor(parcel: Parcel) : this(
-        id = parcel.readString() ?: "",
-        name = parcel.readString() ?: "",
-        version = parcel.readString() ?: "",
-        apiVersion = parcel.readInt(),
-        description = parcel.readString(),
-        author = parcel.readString(),
-        iconUrl = parcel.readString()
-    )
-    
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(id)
-        parcel.writeString(name)
-        parcel.writeString(version)
-        parcel.writeInt(apiVersion)
-        parcel.writeString(description)
-        parcel.writeString(author)
-        parcel.writeString(iconUrl)
-    }
-    
-    override fun describeContents(): Int = 0
-    
-    companion object CREATOR : Parcelable.Creator<PluginInfo> {
-        override fun createFromParcel(parcel: Parcel): PluginInfo = PluginInfo(parcel)
-        override fun newArray(size: Int): Array<PluginInfo?> = arrayOfNulls(size)
-        
+    companion object {
         /** Current API version of the SDK */
         const val CURRENT_API_VERSION = 1
     }
 }
-

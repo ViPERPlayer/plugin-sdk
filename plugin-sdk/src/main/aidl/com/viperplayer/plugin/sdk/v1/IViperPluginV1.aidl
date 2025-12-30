@@ -1,4 +1,4 @@
-// IPluginServiceV1.sdk - Main plugin interface (V1 API)
+// IViperPluginV1.sdk - Main plugin interface (V1 API)
 package com.viperplayer.plugin.sdk.v1;
 
 import com.viperplayer.plugin.sdk.v1.PluginInfo;
@@ -22,6 +22,7 @@ import com.viperplayer.plugin.sdk.v1.IArtistCallback;
 import com.viperplayer.plugin.sdk.v1.IPlaylistCallback;
 import com.viperplayer.plugin.sdk.v1.IAudioStreamCallback;
 import com.viperplayer.plugin.sdk.v1.IHostCallbackV1;
+import com.viperplayer.plugin.sdk.IConnectCallback;
 
 /**
  * Main interface that plugins must implement.
@@ -29,7 +30,7 @@ import com.viperplayer.plugin.sdk.v1.IHostCallbackV1;
  * 
  * All async methods use callbacks. The SDK provides Kotlin suspend wrappers.
  */
-interface IPluginServiceV1 {
+interface IViperPluginV1 {
     
     // ==================== Plugin Lifecycle ====================
     
@@ -37,13 +38,13 @@ interface IPluginServiceV1 {
      * Called when the host connects to the plugin.
      * Plugin receives a callback to communicate with the host.
      */
-    void connect(IHostCallbackV1 hostCallback);
+    void onConnect(IHostCallbackV1 hostCallback, IConnectCallback callback);
     
     /**
      * Called when the host disconnects from the plugin.
      * Plugin should clean up any resources.
      */
-    void disconnect();
+    void onDisconnect();
     
     /**
      * Get plugin capabilities (what features it supports).

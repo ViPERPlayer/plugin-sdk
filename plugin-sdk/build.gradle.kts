@@ -44,7 +44,6 @@ android {
 
 dependencies {
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.service)
     
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

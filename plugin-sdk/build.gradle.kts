@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.viperplayer.plugin.sdk"
+    namespace = "com.viperplayer.plugin"
     compileSdk = 36
 
     defaultConfig {

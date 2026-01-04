@@ -6,5 +6,5 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class SearchSuggestionsResultV1(
     val suggestions: List<String>,
-    val items: List<SearchSuggestionsItemV1>
+    val items: List<MediaItemV1>
 ) : Parcelable

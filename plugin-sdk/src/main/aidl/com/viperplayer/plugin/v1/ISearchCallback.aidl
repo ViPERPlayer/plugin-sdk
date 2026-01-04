@@ -3,14 +3,17 @@ package com.viperplayer.plugin.v1;
 
 import com.viperplayer.plugin.v1.SearchResult;
 
-/**
- * Callback interface for search operations.
- * On error, the implementation should throw a PluginException.
- */
 interface ISearchCallback {
     /**
      * Called when search completes successfully.
-     * @throws PluginException if search fails
      */
     void onSuccess(in SearchResult result);
+
+    /**
+     * Called when search suggestions call fails.
+     *
+     * @param errorCode Error code.
+     * @param message Error message.
+     */
+    void onFailure(int errorCode, String message);
 }

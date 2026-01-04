@@ -119,7 +119,11 @@ abstract class ViperPluginService : Service() {
         ) {
             if (query == null || callback == null) return
             scope.launch {
-                callback.onSuccess(plugin.search(query, types, cursor, limit))
+                try {
+                    callback.onSuccess(plugin.search(query, types, cursor, limit))
+                } catch (e: Exception) {
+                    callback.onFailure(ErrorCodes.UNKNOWN, e.message)
+                }
             }
         }
 

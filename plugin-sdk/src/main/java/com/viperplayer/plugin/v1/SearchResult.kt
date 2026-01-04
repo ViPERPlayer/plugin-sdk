@@ -17,7 +17,7 @@ data class SearchResult(
     @Parcelize
     data class Section(
         val type: Type,
-        val items: List<SearchSuggestionsItemV1>,
+        val items: List<MediaItemV1>,
     ): Parcelable {
         enum class Type {
             TOP_RESULT,

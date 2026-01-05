@@ -1,4 +1,4 @@
-// BrowseCategory.sdk - Browse/discovery categories
+// BrowseCategory.aidl - Browse/discovery categories
 package com.viperplayer.plugin.v1;
 
 parcelable BrowseCategory;

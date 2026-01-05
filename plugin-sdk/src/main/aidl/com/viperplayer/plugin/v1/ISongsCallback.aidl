@@ -1,4 +1,4 @@
-// ISongsCallback.sdk - Callback for songs list operations
+// ISongsCallback.aidl - Callback for songs list operations
 package com.viperplayer.plugin.v1;
 
 import com.viperplayer.plugin.v1.Song;

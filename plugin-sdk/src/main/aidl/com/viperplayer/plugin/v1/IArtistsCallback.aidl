@@ -1,4 +1,4 @@
-// IArtistsCallback.sdk - Callback for artists list operations
+// IArtistsCallback.aidl - Callback for artists list operations
 package com.viperplayer.plugin.v1;
 
 import com.viperplayer.plugin.v1.Artist;

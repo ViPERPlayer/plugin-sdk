@@ -1,4 +1,4 @@
-// IAlbumsCallback.sdk - Callback for albums list operations
+// IAlbumsCallback.aidl - Callback for albums list operations
 package com.viperplayer.plugin.v1;
 
 import com.viperplayer.plugin.v1.Album;

@@ -1,4 +1,4 @@
-// IArtistCallback.sdk - Callback for single artist operations
+// IArtistCallback.aidl - Callback for single artist operations
 package com.viperplayer.plugin.v1;
 
 import com.viperplayer.plugin.v1.Artist;

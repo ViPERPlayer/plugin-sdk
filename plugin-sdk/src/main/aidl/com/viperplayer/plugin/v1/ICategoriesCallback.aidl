@@ -1,4 +1,4 @@
-// ICategoriesCallback.sdk - Callback for browse categories
+// ICategoriesCallback.aidl - Callback for browse categories
 package com.viperplayer.plugin.v1;
 
 import com.viperplayer.plugin.v1.BrowseCategory;

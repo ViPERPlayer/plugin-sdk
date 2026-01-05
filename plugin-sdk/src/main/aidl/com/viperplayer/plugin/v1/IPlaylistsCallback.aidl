@@ -1,4 +1,4 @@
-// IPlaylistsCallback.sdk - Callback for playlists list operations
+// IPlaylistsCallback.aidl - Callback for playlists list operations
 package com.viperplayer.plugin.v1;
 
 import com.viperplayer.plugin.v1.Playlist;

@@ -96,7 +96,9 @@ interface ViperPlugin {
         categoryId: String,
         cursor: String? = null,
         limit: Int = 20
-    ): SearchResult = SearchResult()
+    ): SearchResult = SearchResult(
+        items = emptyList()
+    )
     
     // ==================== Library ====================
     
@@ -137,17 +139,17 @@ interface ViperPlugin {
     /**
      * Get song details.
      */
-    abstract suspend fun getSong(mediaId: String): Song
+    abstract suspend fun getSong(id: String): Song
     
     /**
      * Get album details with tracks.
      */
-    abstract suspend fun getAlbum(mediaId: String): Album
+    abstract suspend fun getAlbum(id: String): Album
     
     /**
      * Get artist details.
      */
-    abstract suspend fun getArtist(mediaId: String): Artist
+    abstract suspend fun getArtist(id: String): Artist
     
     /**
      * Get artist's songs.
@@ -184,28 +186,32 @@ interface ViperPlugin {
     // ==================== Audio Streaming ====================
     
     /**
-     * Get an audio stream for a song.
-     * The plugin should decode the audio and stream PCM data.
+     * Get a stream source for a song.
+     * Can return a URL, DASH XML, or AudioStream based on what the plugin supports.
      * 
-     * Example implementation:
+     * Example implementations:
      * ```kotlin
-     * override suspend fun getAudioStream(mediaId: String): AudioStreamWriter {
-     *     val writer = AudioStreamWriter.create(
-     *         mediaId = mediaId,
-     *         format = AudioFormat.CD_QUALITY,
-     *         durationMs = getSongDuration(mediaId)
-     *     )
-     *     
+     * // Return a URL
+     * override suspend fun getStream(mediaId: String): StreamSource {
+     *     return StreamSource.url("https://example.com/stream/$mediaId")
+     * }
+     * 
+     * // Return DASH XML
+     * override suspend fun getStream(mediaId: String): StreamSource {
+     *     val dashXml = fetchDashManifest(mediaId)
+     *     return StreamSource.dash(dashXml)
+     * }
+     * 
+     * // Return AudioStream (for custom decoding)
+     * override suspend fun getStream(mediaId: String): StreamSource {
+     *     val writer = AudioStreamWriter.create(...)
      *     // Start decoding in background
-     *     scope.launch {
-     *         decodeAndWrite(mediaId, writer)
-     *     }
-     *     
-     *     return writer
+     *     scope.launch { decodeAndWrite(mediaId, writer) }
+     *     return StreamSource.audioStream(writer.audioStream)
      * }
      * ```
      */
-    abstract suspend fun getAudioStream(mediaId: String): AudioStreamWriter
+    abstract suspend fun getStream(mediaId: String): com.viperplayer.plugin.v1.StreamSource
     
     /**
      * Stop an active audio stream.
@@ -228,11 +234,5 @@ interface ViperPlugin {
      * Return null if no custom settings UI is needed.
      */
     fun getSettingsActivityClass(): String? = null
-    
-    /**
-     * Get the class name of an embeddable settings View.
-     * Return null if not supported.
-     */
-    fun getSettingsViewClass(): String? = null
 }
 

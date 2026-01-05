@@ -11,20 +11,9 @@ import kotlinx.parcelize.Parcelize
  */
 @Parcelize
 data class SearchResult(
-    val sections: List<Section> = emptyList(),
+    val items: List<MediaItemV1>,
     val nextCursor: String? = null,
 ) : Parcelable {
-    @Parcelize
-    data class Section(
-        val type: Type,
-        val items: List<MediaItemV1>,
-    ): Parcelable {
-        enum class Type {
-            TOP_RESULT,
-            OTHER
-        }
-    }
-
     companion object {
         /** Search type flags */
         const val TYPE_SONG = 1

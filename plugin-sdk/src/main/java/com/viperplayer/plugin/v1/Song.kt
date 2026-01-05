@@ -27,6 +27,8 @@ data class Song(
     val artists: List<Artist> = emptyList(),
     val album: Album? = null,
     val durationMs: Long? = 0,
+    val gain: Float? = null,
+    val peak: Float? = null,
     val artworkUrl: String? = null,
     val trackNumber: Int? = null,
     val discNumber: Int? = null,

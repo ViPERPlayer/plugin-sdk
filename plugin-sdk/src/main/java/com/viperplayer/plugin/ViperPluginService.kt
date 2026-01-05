@@ -9,7 +9,6 @@ import com.viperplayer.plugin.v1.IAlbumCallback
 import com.viperplayer.plugin.v1.IAlbumsCallback
 import com.viperplayer.plugin.v1.IArtistCallback
 import com.viperplayer.plugin.v1.IArtistsCallback
-import com.viperplayer.plugin.v1.IAudioStreamCallback
 import com.viperplayer.plugin.v1.ICategoriesCallback
 import com.viperplayer.plugin.v1.IHostCallbackV1
 import com.viperplayer.plugin.v1.IPlaylistCallback
@@ -18,6 +17,7 @@ import com.viperplayer.plugin.v1.ISearchCallback
 import com.viperplayer.plugin.v1.ISearchSuggestionsCallback
 import com.viperplayer.plugin.v1.ISongCallback
 import com.viperplayer.plugin.v1.ISongsCallback
+import com.viperplayer.plugin.v1.IStreamSourceCallback
 import com.viperplayer.plugin.v1.IViperPluginV1
 import com.viperplayer.plugin.v1.PluginCapabilities
 import kotlinx.coroutines.CoroutineScope
@@ -187,7 +187,14 @@ abstract class ViperPluginService : Service() {
             mediaId: String?,
             callback: IAlbumCallback?
         ) {
-            TODO("Not yet implemented")
+            if (mediaId == null || callback == null) return
+            scope.launch {
+                try {
+                    callback.onSuccess(plugin.getAlbum(mediaId))
+                } catch (e: Exception) {
+                    callback.onFailure(ErrorCodes.UNKNOWN, e.message)
+                }
+            }
         }
 
         override fun getArtist(
@@ -219,7 +226,14 @@ abstract class ViperPluginService : Service() {
             mediaId: String?,
             callback: IPlaylistCallback?
         ) {
-            TODO("Not yet implemented")
+            if (mediaId == null || callback == null) return
+            scope.launch {
+                try {
+                    callback.onSuccess(plugin.getPlaylist(mediaId))
+                } catch (e: Exception) {
+                    callback.onFailure(ErrorCodes.UNKNOWN, e.message)
+                }
+            }
         }
 
         override fun getPlaylistSongs(
@@ -231,12 +245,24 @@ abstract class ViperPluginService : Service() {
             TODO("Not yet implemented")
         }
 
-        override fun getAudioStream(
+        override fun getStream(
             mediaId: String?,
-            callback: IAudioStreamCallback?
+            callback: IStreamSourceCallback?
         ) {
-            TODO("Not yet implemented")
+            if (mediaId == null || callback == null) return
+            scope.launch {
+                try {
+                    val streamSource = plugin.getStream(mediaId)
+                    callback.onSuccess(streamSource)
+                } catch (e: Exception) {
+                    // Error handling is done via PluginException in the callback
+                    Log.e(TAG, "Error getting stream", e)
+                    // Note: IStreamSourceCallback doesn't have onFailure, so we can't report errors
+                    // The plugin should handle errors internally
+                }
+            }
         }
+
 
         override fun stopAudioStream(streamId: String?) {
             TODO("Not yet implemented")

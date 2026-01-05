@@ -1,4 +1,4 @@
-// IViperPluginV1.sdk - Main plugin interface (V1 API)
+// IViperPluginV1.aidl - Main plugin interface (V1 API)
 package com.viperplayer.plugin.v1;
 
 import com.viperplayer.plugin.v1.PluginInfo;
@@ -19,7 +19,8 @@ import com.viperplayer.plugin.v1.ISongCallback;
 import com.viperplayer.plugin.v1.IAlbumCallback;
 import com.viperplayer.plugin.v1.IArtistCallback;
 import com.viperplayer.plugin.v1.IPlaylistCallback;
-import com.viperplayer.plugin.v1.IAudioStreamCallback;
+import com.viperplayer.plugin.v1.IStreamSourceCallback;
+import com.viperplayer.plugin.v1.StreamSource;
 import com.viperplayer.plugin.v1.IHostCallbackV1;
 import com.viperplayer.plugin.IConnectCallback;
 
@@ -144,12 +145,12 @@ interface IViperPluginV1 {
     // ==================== Audio Streaming ====================
     
     /**
-     * Get an audio stream for playback.
-     * Plugin should start a background thread to decode and stream PCM data.
-     * @param id The song to stream
-     * @param callback Callback to receive the AudioStream (contains ParcelFileDescriptor)
+     * Get a stream source for playback.
+     * Can return a URL, DASH XML, or AudioStream based on what the plugin supports.
+     * @param id The song to get stream for
+     * @param callback Callback to receive the StreamSource
      */
-    void getAudioStream(in String id, IAudioStreamCallback callback);
+    void getStream(in String id, IStreamSourceCallback callback);
 
     /**
      * Stop an active audio stream.

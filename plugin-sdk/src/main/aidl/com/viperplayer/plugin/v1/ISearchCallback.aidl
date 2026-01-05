@@ -1,4 +1,4 @@
-// ISearchCallback.sdk - Callback for search operations
+// ISearchCallback.aidl - Callback for search operations
 package com.viperplayer.plugin.v1;
 
 import com.viperplayer.plugin.v1.SearchResult;

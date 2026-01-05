@@ -1,4 +1,4 @@
-// IAudioStreamCallback.sdk - Callback for audio stream operations
+// IAudioStreamCallback.aidl - Callback for audio stream operations
 package com.viperplayer.plugin.v1;
 
 import com.viperplayer.plugin.v1.AudioStream;

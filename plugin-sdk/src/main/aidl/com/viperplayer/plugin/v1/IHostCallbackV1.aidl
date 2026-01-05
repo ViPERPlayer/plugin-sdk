@@ -1,4 +1,4 @@
-// IHostCallbackV1.sdk - Callbacks from plugin to host (V1 API)
+// IHostCallbackV1.aidl - Callbacks from plugin to host (V1 API)
 package com.viperplayer.plugin.v1;
 
 import com.viperplayer.plugin.v1.Song;

@@ -28,8 +28,8 @@ data class Song(
     val artists: List<Artist> = emptyList(),
     val album: Album? = null,
     val durationMs: Long? = 0,
-    val gain: Float? = null,
-    val peak: Float? = null,
+    val replayGainDb: Float? = null, // ReplayGain value in dB (will be converted to linear for volume)
+    val peakAmplitude: Float? = null, // Peak amplitude (0.0-1.0+)
     val artworkUrl: String? = null,
     val trackNumber: Int? = null,
     val discNumber: Int? = null,

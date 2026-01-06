@@ -132,7 +132,7 @@ abstract class ViperPluginService : Service() {
             limit: Int,
             callback: ICategoriesCallback?
         ) {
-            TODO("Not yet implemented")
+            callback?.onSuccess(emptyList(), null)
         }
 
         override fun getCategoryContents(
@@ -141,7 +141,7 @@ abstract class ViperPluginService : Service() {
             limit: Int,
             callback: ISearchCallback?
         ) {
-            TODO("Not yet implemented")
+            callback?.onSuccess(null)
         }
 
         override fun getLibrarySongs(
@@ -149,7 +149,7 @@ abstract class ViperPluginService : Service() {
             limit: Int,
             callback: ISongsCallback?
         ) {
-            TODO("Not yet implemented")
+            callback?.onSuccess(emptyList(), null)
         }
 
         override fun getLibraryAlbums(
@@ -157,7 +157,7 @@ abstract class ViperPluginService : Service() {
             limit: Int,
             callback: IAlbumsCallback?
         ) {
-            TODO("Not yet implemented")
+            callback?.onSuccess(emptyList(), null)
         }
 
         override fun getLibraryArtists(
@@ -165,7 +165,7 @@ abstract class ViperPluginService : Service() {
             limit: Int,
             callback: IArtistsCallback?
         ) {
-            TODO("Not yet implemented")
+            callback?.onSuccess(emptyList(), null)
         }
 
         override fun getLibraryPlaylists(
@@ -173,14 +173,14 @@ abstract class ViperPluginService : Service() {
             limit: Int,
             callback: IPlaylistsCallback?
         ) {
-            TODO("Not yet implemented")
+            callback?.onSuccess(emptyList(), null)
         }
 
         override fun getSong(
             mediaId: String?,
             callback: ISongCallback?
         ) {
-            TODO("Not yet implemented")
+            callback?.onSuccess(null)
         }
 
         override fun getAlbum(
@@ -201,7 +201,7 @@ abstract class ViperPluginService : Service() {
             mediaId: String?,
             callback: IArtistCallback?
         ) {
-            TODO("Not yet implemented")
+            callback?.onSuccess(null)
         }
 
         override fun getArtistSongs(
@@ -210,7 +210,7 @@ abstract class ViperPluginService : Service() {
             limit: Int,
             callback: ISongsCallback?
         ) {
-            TODO("Not yet implemented")
+            callback?.onSuccess(emptyList(), null)
         }
 
         override fun getArtistAlbums(
@@ -219,7 +219,7 @@ abstract class ViperPluginService : Service() {
             limit: Int,
             callback: IAlbumsCallback?
         ) {
-            TODO("Not yet implemented")
+            callback?.onSuccess(emptyList(), null)
         }
 
         override fun getPlaylist(
@@ -242,7 +242,7 @@ abstract class ViperPluginService : Service() {
             limit: Int,
             callback: ISongsCallback?
         ) {
-            TODO("Not yet implemented")
+            callback?.onSuccess(emptyList(), null)
         }
 
         override fun getStream(

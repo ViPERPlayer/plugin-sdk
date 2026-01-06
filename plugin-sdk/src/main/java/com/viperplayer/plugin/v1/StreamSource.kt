@@ -29,24 +29,3 @@ data class StreamSource(
         fun audioStream(audioStream: AudioStream) = StreamSource(Type.AUDIO_STREAM, audioStream = audioStream)
     }
 }
-
-/**
- * Kotlin sealed class for type-safe stream source handling.
- * This is the preferred way to handle StreamSource in Kotlin code.
- */
-sealed class StreamSourceTypeSealed {
-    data class Url(val url: String) : StreamSourceTypeSealed()
-    data class Dash(val xml: String) : StreamSourceTypeSealed()
-    data class AudioStream(val stream: com.viperplayer.plugin.v1.AudioStream) : StreamSourceTypeSealed()
-    
-    companion object {
-        fun from(streamSource: StreamSource): StreamSourceTypeSealed {
-            return when (streamSource.type) {
-                StreamSource.Type.URL -> Url(requireNotNull(streamSource.url) { "URL type requires url field" })
-                StreamSource.Type.DASH -> Dash(requireNotNull(streamSource.dashXml) { "DASH type requires dashXml field" })
-                StreamSource.Type.AUDIO_STREAM -> AudioStream(requireNotNull(streamSource.audioStream) { "AUDIO_STREAM type requires audioStream field" })
-            }
-        }
-    }
-}
-

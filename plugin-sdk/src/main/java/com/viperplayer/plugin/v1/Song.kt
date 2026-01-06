@@ -17,6 +17,7 @@ import kotlinx.parcelize.Parcelize
  * @property discNumber Disc number for multi-disc albums
  * @property isExplicit Whether the song has explicit content
  * @property isPlayable Whether the song can be played (may be unavailable in region)
+ * @property requiresInternet Whether the song requires internet connection to play (false for local files)
  * @property releaseYear Year the song was released
  * @property genres Genres associated with this song
  */
@@ -34,6 +35,7 @@ data class Song(
     val discNumber: Int? = null,
     val isExplicit: Boolean = false,
     val isPlayable: Boolean = true,
+    val requiresInternet: Boolean = true, // Default to true for streaming services
     val releaseYear: Int? = null,
     val genres: List<String> = emptyList()
 ) : Parcelable {

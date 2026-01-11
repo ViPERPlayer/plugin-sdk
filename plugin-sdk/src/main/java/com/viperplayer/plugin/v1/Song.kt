@@ -12,7 +12,7 @@ import kotlinx.parcelize.Parcelize
  * @property artists Artists performing this song
  * @property album Album this song belongs to (may be null for singles)
  * @property durationMs Duration in milliseconds
- * @property artworkUrl URL to artwork (falls back to album artwork)
+ * @property artwork Artwork (falls back to album artwork)
  * @property trackNumber Track number on the album
  * @property discNumber Disc number for multi-disc albums
  * @property isExplicit Whether the song has explicit content
@@ -30,7 +30,7 @@ data class Song(
     val durationMs: Long? = 0,
     val replayGainDb: Float? = null, // ReplayGain value in dB (will be converted to linear for volume)
     val peakAmplitude: Float? = null, // Peak amplitude (0.0-1.0+)
-    val artworkUrl: String? = null,
+    val artwork: Artwork? = null,
     val trackNumber: Int? = null,
     val discNumber: Int? = null,
     val isExplicit: Boolean = false,
@@ -46,8 +46,8 @@ data class Song(
     /** Album name for display */
     val albumName: String
         get() = album?.name ?: ""
-    
-    /** Effective artwork URL (song's own or album's) */
-    val effectiveArtworkUrl: String?
-        get() = artworkUrl ?: album?.artworkUrl
+
+//    /** Effective artwork URL (song's own or album's) */
+//    val effectiveArtworkUrl: String?
+//        get() = artworkUrl ?: album?.artworkUrl
 }

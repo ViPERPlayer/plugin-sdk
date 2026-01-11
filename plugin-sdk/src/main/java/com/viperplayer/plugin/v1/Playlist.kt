@@ -9,7 +9,7 @@ import kotlinx.parcelize.Parcelize
  * @property id Unique identifier for this playlist
  * @property name Playlist name/title
  * @property description Playlist description
- * @property artworkUrl URL to playlist cover art
+ * @property artwork Playlist cover art
  * @property ownerName Name of the playlist owner/creator
  * @property songCount Number of songs in the playlist
  * @property songs Tracks in this playlist (only populated when fetching full details)
@@ -19,7 +19,7 @@ data class Playlist(
     val id: String,
     val name: String,
     val description: String? = null,
-    val artworkUrl: String? = null,
+    val artwork: Artwork? = null,
     val ownerName: String? = null,
     val songCount: Int = 0,
     val songs: List<Song>? = null

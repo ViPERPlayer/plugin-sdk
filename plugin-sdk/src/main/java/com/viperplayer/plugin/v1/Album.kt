@@ -9,7 +9,7 @@ import kotlinx.parcelize.Parcelize
  * @property id Unique identifier for this album
  * @property name Album name/title
  * @property artists Artists on this album (hierarchical - embedded, not referenced)
- * @property artworkUrl URL to album cover art
+ * @property artwork Album cover art
  * @property releaseYear Year the album was released
  * @property trackCount Number of tracks on the album
  * @property type Album type (album, single, EP, compilation)
@@ -20,7 +20,7 @@ data class Album(
     val id: String,
     val name: String,
     val artists: List<Artist> = emptyList(),
-    val artworkUrl: String? = null,
+    val artwork: Artwork? = null,
     val releaseYear: Int? = null,
     val trackCount: Int = 0,
     val isExplicit: Boolean = false,

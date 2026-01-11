@@ -177,20 +177,20 @@ abstract class ViperPluginService : Service() {
         }
 
         override fun getSong(
-            mediaId: String?,
+            id: String?,
             callback: ISongCallback?
         ) {
             callback?.onSuccess(null)
         }
 
         override fun getAlbum(
-            mediaId: String?,
+            id: String?,
             callback: IAlbumCallback?
         ) {
-            if (mediaId == null || callback == null) return
+            if (id == null || callback == null) return
             scope.launch {
                 try {
-                    callback.onSuccess(plugin.getAlbum(mediaId))
+                    callback.onSuccess(plugin.getAlbum(id))
                 } catch (e: Exception) {
                     callback.onFailure(ErrorCodes.UNKNOWN, e.message)
                 }
@@ -198,10 +198,17 @@ abstract class ViperPluginService : Service() {
         }
 
         override fun getArtist(
-            mediaId: String?,
+            id: String?,
             callback: IArtistCallback?
         ) {
-            callback?.onSuccess(null)
+            if (id == null || callback == null) return
+            scope.launch {
+                try {
+                    callback.onSuccess(plugin.getArtist(id))
+                } catch (e: Exception) {
+                    callback.onFailure(ErrorCodes.UNKNOWN, e.message)
+                }
+            }
         }
 
         override fun getArtistSongs(

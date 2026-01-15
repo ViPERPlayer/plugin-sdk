@@ -23,6 +23,7 @@ data class Artist(
     val artwork: Artwork? = null,
     val topSongs: List<Song> = emptyList(),
     val albums: List<Album> = emptyList(),
+    // TODO: Add compilations
     val playlists: List<Playlist> = emptyList(),
     val featuring: List<Playlist> = emptyList(),
     val appearsOn: List<MediaItemV1> = emptyList(),

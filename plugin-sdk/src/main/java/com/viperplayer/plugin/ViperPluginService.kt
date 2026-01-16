@@ -20,6 +20,8 @@ import com.viperplayer.plugin.v1.ISongsCallback
 import com.viperplayer.plugin.v1.IStreamSourceCallback
 import com.viperplayer.plugin.v1.IViperPluginV1
 import com.viperplayer.plugin.v1.PluginCapabilities
+import com.viperplayer.plugin.v1.SearchFilter
+import com.viperplayer.plugin.v1.SearchResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -80,6 +82,7 @@ abstract class ViperPluginService : Service() {
                     plugin.onConnect(hostCallback)
                     callback.onSuccess()
                 } catch (e: Exception) {
+                    Log.e(TAG, "Error in onConnect", e)
                     callback.onFailure(ErrorCodes.UNKNOWN, e.message)
                 }
             }
@@ -105,6 +108,7 @@ abstract class ViperPluginService : Service() {
                 try {
                     callback.onSuccess(plugin.getSearchSuggestions(query))
                 } catch (e: Exception) {
+                    Log.e(TAG, "Error in getSearchSuggestions", e)
                     callback.onFailure(ErrorCodes.UNKNOWN, e.message)
                 }
             }
@@ -120,8 +124,16 @@ abstract class ViperPluginService : Service() {
             if (query == null || callback == null) return
             scope.launch {
                 try {
-                    callback.onSuccess(plugin.search(query, types, cursor, limit))
+                    val filter = when (types) {
+                        SearchResult.TYPE_SONG -> SearchFilter.SONG
+                        SearchResult.TYPE_ALBUM -> SearchFilter.ALBUM
+                        SearchResult.TYPE_ARTIST -> SearchFilter.ARTIST
+                        SearchResult.TYPE_PLAYLIST -> SearchFilter.PLAYLIST
+                        else -> null
+                    }
+                    callback.onSuccess(plugin.search(query, filter, cursor, limit))
                 } catch (e: Exception) {
+                    Log.e(TAG, "Error in search", e)
                     callback.onFailure(ErrorCodes.UNKNOWN, e.message)
                 }
             }
@@ -192,6 +204,7 @@ abstract class ViperPluginService : Service() {
                 try {
                     callback.onSuccess(plugin.getAlbum(id))
                 } catch (e: Exception) {
+                    Log.e(TAG, "Error in getAlbum", e)
                     callback.onFailure(ErrorCodes.UNKNOWN, e.message)
                 }
             }
@@ -206,6 +219,7 @@ abstract class ViperPluginService : Service() {
                 try {
                     callback.onSuccess(plugin.getArtist(id))
                 } catch (e: Exception) {
+                    Log.e(TAG, "Error in getArtist", e)
                     callback.onFailure(ErrorCodes.UNKNOWN, e.message)
                 }
             }
@@ -238,6 +252,7 @@ abstract class ViperPluginService : Service() {
                 try {
                     callback.onSuccess(plugin.getPlaylist(mediaId))
                 } catch (e: Exception) {
+                    Log.e(TAG, "Error in getPlaylist", e)
                     callback.onFailure(ErrorCodes.UNKNOWN, e.message)
                 }
             }

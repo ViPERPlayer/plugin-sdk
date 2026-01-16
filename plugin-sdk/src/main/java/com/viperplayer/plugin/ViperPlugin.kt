@@ -6,6 +6,7 @@ import com.viperplayer.plugin.v1.BrowseCategory
 import com.viperplayer.plugin.v1.IHostCallbackV1
 import com.viperplayer.plugin.v1.Playlist
 import com.viperplayer.plugin.v1.PluginCapabilities
+import com.viperplayer.plugin.v1.SearchFilter
 import com.viperplayer.plugin.v1.SearchResult
 import com.viperplayer.plugin.v1.SearchSuggestionsResultV1
 import com.viperplayer.plugin.v1.Song
@@ -74,7 +75,7 @@ interface ViperPlugin {
      */
     abstract suspend fun search(
         query: String,
-        types: Int = SearchResult.Companion.TYPE_ALL,
+        filter: SearchFilter? = null,
         cursor: String? = null,
         limit: Int = 20
     ): SearchResult

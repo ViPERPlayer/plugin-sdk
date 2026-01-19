@@ -10,6 +10,7 @@ import com.viperplayer.plugin.v1.IAlbumsCallback
 import com.viperplayer.plugin.v1.IArtistCallback
 import com.viperplayer.plugin.v1.IArtistsCallback
 import com.viperplayer.plugin.v1.ICategoriesCallback
+import com.viperplayer.plugin.v1.IHomeContentCallback
 import com.viperplayer.plugin.v1.IHostCallbackV1
 import com.viperplayer.plugin.v1.IPlaylistCallback
 import com.viperplayer.plugin.v1.IPlaylistsCallback
@@ -265,6 +266,20 @@ abstract class ViperPluginService : Service() {
             callback: ISongsCallback?
         ) {
             callback?.onSuccess(emptyList(), null)
+        }
+
+        override fun getHomeSections(
+            callback: IHomeContentCallback?
+        ) {
+            if (callback == null) return
+            scope.launch {
+                try {
+                    callback.onSuccess(plugin.getHomeSections())
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error in getHomeSections", e)
+                    callback.onFailure(e.message ?: "Unknown error")
+                }
+            }
         }
 
         override fun getStream(

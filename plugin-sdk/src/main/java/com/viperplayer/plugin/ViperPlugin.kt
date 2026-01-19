@@ -3,6 +3,7 @@ package com.viperplayer.plugin
 import com.viperplayer.plugin.v1.Album
 import com.viperplayer.plugin.v1.Artist
 import com.viperplayer.plugin.v1.BrowseCategory
+import com.viperplayer.plugin.v1.HomeContent
 import com.viperplayer.plugin.v1.IHostCallbackV1
 import com.viperplayer.plugin.v1.Playlist
 import com.viperplayer.plugin.v1.PluginCapabilities
@@ -153,37 +154,17 @@ interface ViperPlugin {
     abstract suspend fun getArtist(id: String): Artist
     
     /**
-     * Get artist's songs.
-     */
-    suspend fun getArtistSongs(
-        artistId: String,
-        cursor: String? = null,
-        limit: Int = 50
-    ): PagedResult<Song> = PagedResult.empty()
-    
-    /**
-     * Get artist's albums.
-     */
-    suspend fun getArtistAlbums(
-        artistId: String,
-        cursor: String? = null,
-        limit: Int = 50
-    ): PagedResult<Album> = PagedResult.empty()
-    
-    /**
      * Get playlist details with tracks.
      */
     abstract suspend fun getPlaylist(mediaId: String): Playlist
     
+    // ==================== Home Screen ====================
+
     /**
-     * Get playlist songs.
+     * Get content for the home screen.
      */
-    suspend fun getPlaylistSongs(
-        playlistId: String,
-        cursor: String? = null,
-        limit: Int = 50
-    ): PagedResult<Song> = PagedResult.empty()
-    
+    suspend fun getHomeSections(): HomeContent
+
     // ==================== Audio Streaming ====================
     
     /**

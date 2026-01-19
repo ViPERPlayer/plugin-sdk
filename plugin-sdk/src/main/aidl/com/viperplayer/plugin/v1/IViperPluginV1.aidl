@@ -22,6 +22,7 @@ import com.viperplayer.plugin.v1.IPlaylistCallback;
 import com.viperplayer.plugin.v1.IStreamSourceCallback;
 import com.viperplayer.plugin.v1.StreamSource;
 import com.viperplayer.plugin.v1.IHostCallbackV1;
+import com.viperplayer.plugin.v1.IHomeContentCallback;
 import com.viperplayer.plugin.IConnectCallback;
 
 /**
@@ -141,6 +142,13 @@ interface IViperPluginV1 {
      * Get playlist tracks.
      */
     void getPlaylistSongs(in String playlistId, String cursor, int limit, ISongsCallback callback);
+
+    // ==================== Home Screen ====================
+
+    /**
+     * Get content for the home screen.
+     */
+    void getHomeSections(IHomeContentCallback callback);
 
     // ==================== Audio Streaming ====================
     

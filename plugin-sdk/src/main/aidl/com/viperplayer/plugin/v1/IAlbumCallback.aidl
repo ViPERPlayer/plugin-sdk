@@ -7,7 +7,7 @@ interface IAlbumCallback {
     /**
      * Called when album is fetched successfully.
      */
-    void onSuccess(in Album album);
+    void onSuccess(in Album album) = 1;
 
     /**
      * Called when album call fails.
@@ -15,6 +15,5 @@ interface IAlbumCallback {
      * @param errorCode Error code.
      * @param message Error message.
      */
-    void onFailure(int errorCode, String message);
+    void onFailure(int errorCode, String message) = 2;
 }
-

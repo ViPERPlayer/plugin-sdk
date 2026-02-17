@@ -12,6 +12,5 @@ interface IAlbumsCallback {
      * Called when albums are fetched successfully.
      * @throws PluginException if fetching fails
      */
-    void onSuccess(in List<Album> albums, String nextCursor);
+    void onSuccess(in List<Album> albums, String nextCursor) = 1;
 }
-

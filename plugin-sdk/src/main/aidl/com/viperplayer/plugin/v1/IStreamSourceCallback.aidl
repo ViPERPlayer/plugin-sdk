@@ -13,6 +13,5 @@ interface IStreamSourceCallback {
      * @param source The stream source (URL, DASH XML, or AudioStream)
      * @throws PluginException if fetching fails
      */
-    void onSuccess(in StreamSource source);
+    void onSuccess(in StreamSource source) = 1;
 }
-

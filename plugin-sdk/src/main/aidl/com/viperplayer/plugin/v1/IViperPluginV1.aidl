@@ -39,19 +39,25 @@ interface IViperPluginV1 {
      * Called when the host connects to the plugin.
      * Plugin receives a callback to communicate with the host.
      */
-    void onConnect(IHostCallbackV1 hostCallback, IConnectCallback callback);
+    void onConnect(IHostCallbackV1 hostCallback, IConnectCallback callback) = 1;
     
     /**
      * Called when the host disconnects from the plugin.
      * Plugin should clean up any resources.
      */
-    void onDisconnect();
+    void onDisconnect() = 2;
     
     /**
      * Get plugin capabilities (what features it supports).
      */
-    PluginCapabilities getCapabilities();
+    PluginCapabilities getCapabilities() = 3;
     
+    /**
+     * Get the fully qualified class name of the plugin's settings activity.
+     * If the plugin does not have a settings activity, return null.
+     */
+    String getSettingsActivityClass() = 4;
+
     // ==================== Search ====================
 
     /**
@@ -59,7 +65,7 @@ interface IViperPluginV1 {
     * @param query The search query string
     * @param callback Callback to receive results
     */
-    void getSearchSuggestions(String query, ISearchSuggestionsCallback callback);
+    void getSearchSuggestions(String query, ISearchSuggestionsCallback callback) = 11;
     
     /**
      * Search for content across this plugin.
@@ -69,86 +75,86 @@ interface IViperPluginV1 {
      * @param limit Maximum results per type
      * @param callback Callback to receive results
      */
-    void search(String query, int types, String cursor, int limit, ISearchCallback callback);
+    void search(String query, int types, String cursor, int limit, ISearchCallback callback) = 12;
 
     // ==================== Browse / Discovery ====================
     
     /**
      * Get root browse categories (e.g., "Genres", "Moods", "New Releases").
      */
-    void getBrowseCategories(String cursor, int limit, ICategoriesCallback callback);
+    void getBrowseCategories(String cursor, int limit, ICategoriesCallback callback) = 21;
 
     /**
      * Get contents of a category.
      * @param categoryId The category to browse
      */
-    void getCategoryContents(String categoryId, String cursor, int limit, ISearchCallback callback);
+    void getCategoryContents(String categoryId, String cursor, int limit, ISearchCallback callback) = 22;
 
     // ==================== Library Access ====================
     
     /**
      * Get user's saved/liked songs.
      */
-    void getLibrarySongs(String cursor, int limit, ISongsCallback callback);
+    void getLibrarySongs(String cursor, int limit, ISongsCallback callback) = 31;
 
     /**
      * Get user's saved albums.
      */
-    void getLibraryAlbums(String cursor, int limit, IAlbumsCallback callback);
+    void getLibraryAlbums(String cursor, int limit, IAlbumsCallback callback) = 32;
 
     /**
      * Get user's followed artists.
      */
-    void getLibraryArtists(String cursor, int limit, IArtistsCallback callback);
+    void getLibraryArtists(String cursor, int limit, IArtistsCallback callback) = 33;
 
     /**
      * Get user's playlists.
      */
-    void getLibraryPlaylists(String cursor, int limit, IPlaylistsCallback callback);
+    void getLibraryPlaylists(String cursor, int limit, IPlaylistsCallback callback) = 34;
 
     // ==================== Detail Fetching ====================
     
     /**
      * Get full song details by ID.
      */
-    void getSong(in String id, ISongCallback callback);
+    void getSong(in String id, ISongCallback callback) = 41;
 
     /**
      * Get album details and tracks.
      */
-    void getAlbum(in String id, IAlbumCallback callback);
+    void getAlbum(in String id, IAlbumCallback callback) = 42;
 
     /**
      * Get artist details.
      */
-    void getArtist(in String id, IArtistCallback callback);
+    void getArtist(in String id, IArtistCallback callback) = 43;
 
     /**
      * Get artist's top songs.
      */
-    void getArtistSongs(in String artistId, String cursor, int limit, ISongsCallback callback);
+    void getArtistSongs(in String artistId, String cursor, int limit, ISongsCallback callback) = 44;
 
     /**
      * Get artist's albums.
      */
-    void getArtistAlbums(in String artistId, String cursor, int limit, IAlbumsCallback callback);
+    void getArtistAlbums(in String artistId, String cursor, int limit, IAlbumsCallback callback) = 45;
 
     /**
      * Get playlist details and tracks.
      */
-    void getPlaylist(in String id, IPlaylistCallback callback);
+    void getPlaylist(in String id, IPlaylistCallback callback) = 46;
 
     /**
      * Get playlist tracks.
      */
-    void getPlaylistSongs(in String playlistId, String cursor, int limit, ISongsCallback callback);
+    void getPlaylistSongs(in String playlistId, String cursor, int limit, ISongsCallback callback) = 47;
 
     // ==================== Home Screen ====================
 
     /**
      * Get content for the home screen.
      */
-    void getHomeSections(IHomeContentCallback callback);
+    void getHomeSections(IHomeContentCallback callback) = 61;
 
     // ==================== Audio Streaming ====================
     
@@ -158,14 +164,14 @@ interface IViperPluginV1 {
      * @param id The song to get stream for
      * @param callback Callback to receive the StreamSource
      */
-    void getStream(in String id, IStreamSourceCallback callback);
+    void getStream(in String id, IStreamSourceCallback callback) = 71;
 
     /**
      * Stop an active audio stream.
      * Plugin should stop decoding and close the pipe.
      * @param streamId The stream ID from AudioStream
      */
-    void stopAudioStream(String streamId);
+    void stopAudioStream(String streamId) = 72;
     
     /**
      * Seek within an active audio stream.
@@ -173,6 +179,5 @@ interface IViperPluginV1 {
      * @param positionMs Target position in milliseconds
      * @return true if seek is supported and successful
      */
-    boolean seekAudioStream(String streamId, long positionMs);
+    boolean seekAudioStream(String streamId, long positionMs) = 73;
 }
-

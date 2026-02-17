@@ -98,9 +98,9 @@ interface ViperPlugin {
         categoryId: String,
         cursor: String? = null,
         limit: Int = 20
-    ): SearchResult = SearchResult(
+    ): SearchResult = SearchResult().apply {
         items = emptyList()
-    )
+    }
     
     // ==================== Library ====================
     

@@ -7,7 +7,7 @@ interface IPlaylistCallback {
     /**
      * Called when playlist is fetched successfully.
      */
-    void onSuccess(in Playlist playlist);
+    void onSuccess(in Playlist playlist) = 1;
 
     /**
      * Called when playlist call fails.
@@ -15,6 +15,5 @@ interface IPlaylistCallback {
      * @param errorCode Error code.
      * @param message Error message.
      */
-    void onFailure(int errorCode, String message);
+    void onFailure(int errorCode, String message) = 2;
 }
-

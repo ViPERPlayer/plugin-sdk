@@ -2,6 +2,6 @@
 package com.viperplayer.plugin;
 
 interface IConnectCallback {
-    void onSuccess();
-    void onFailure(int errorCode, String message);
+    void onSuccess() = 1;
+    void onFailure(int errorCode, String message) = 2;
 }

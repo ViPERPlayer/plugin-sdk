@@ -83,14 +83,14 @@ class AudioStreamWriter private constructor(
      * The host will read PCM data from this stream's pipe.
      */
     val audioStream: AudioStream
-        get() = AudioStream(
-            streamId = streamId,
-            mediaId = mediaId,
-            format = format,
-            durationMs = durationMs,
-            pipe = readPipe,
-            canSeek = canSeek
-        )
+        get() = AudioStream().apply {
+            streamId = this@AudioStreamWriter.streamId
+            mediaId = this@AudioStreamWriter.mediaId
+            format = this@AudioStreamWriter.format
+            durationMs = this@AudioStreamWriter.durationMs
+            pipe = readPipe
+            canSeek = this@AudioStreamWriter.canSeek
+        }
     
     /**
      * Whether this stream has been closed.

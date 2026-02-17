@@ -7,7 +7,7 @@ interface IArtistCallback {
     /**
      * Called when artist is fetched successfully.
      */
-    void onSuccess(in Artist artist);
+    void onSuccess(in Artist artist) = 1;
 
     /**
      * Called when artist call fails.
@@ -15,6 +15,5 @@ interface IArtistCallback {
      * @param errorCode Error code.
      * @param message Error message.
      */
-    void onFailure(int errorCode, String message);
+    void onFailure(int errorCode, String message) = 2;
 }
-

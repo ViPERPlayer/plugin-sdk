@@ -96,6 +96,10 @@ abstract class ViperPluginService : Service() {
         override fun getCapabilities(): PluginCapabilities {
             return plugin.capabilities
         }
+        
+        override fun getSettingsActivityClass(): String? {
+            return plugin.getSettingsActivityClass()
+        }
 
         override fun getSearchSuggestions(
             query: String?,

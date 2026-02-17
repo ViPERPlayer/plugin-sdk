@@ -1,5 +1,13 @@
-// AudioStream.aidl - Audio stream with PCM pipe
 package com.viperplayer.plugin.v1;
 
-parcelable AudioStream;
+import android.os.ParcelFileDescriptor;
+import com.viperplayer.plugin.v1.AudioFormat;
 
+parcelable AudioStream {
+    String streamId;
+    String mediaId;
+    AudioFormat format;
+    long durationMs;
+    ParcelFileDescriptor pipe;
+    boolean canSeek = true;
+}

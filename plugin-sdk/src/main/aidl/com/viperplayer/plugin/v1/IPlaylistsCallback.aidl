@@ -12,6 +12,5 @@ interface IPlaylistsCallback {
      * Called when playlists are fetched successfully.
      * @throws PluginException if fetching fails
      */
-    void onSuccess(in List<Playlist> playlists, String nextCursor);
+    void onSuccess(in List<Playlist> playlists, String nextCursor) = 1;
 }
-

@@ -11,6 +11,5 @@ interface IStringCallback {
      * @param value The string value (null if not available)
      * @throws PluginException if fetching fails
      */
-    void onSuccess(String value);
+    void onSuccess(String value) = 1;
 }
-

@@ -7,7 +7,7 @@ interface ISearchCallback {
     /**
      * Called when search completes successfully.
      */
-    void onSuccess(in SearchResult result);
+    void onSuccess(in SearchResult result) = 1;
 
     /**
      * Called when search suggestions call fails.
@@ -15,5 +15,5 @@ interface ISearchCallback {
      * @param errorCode Error code.
      * @param message Error message.
      */
-    void onFailure(int errorCode, String message);
+    void onFailure(int errorCode, String message) = 2;
 }

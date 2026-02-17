@@ -12,6 +12,5 @@ interface IAudioStreamCallback {
      * Called when audio stream is ready.
      * @throws PluginException if stream creation fails
      */
-    void onSuccess(in AudioStream stream);
+    void onSuccess(in AudioStream stream) = 1;
 }
-

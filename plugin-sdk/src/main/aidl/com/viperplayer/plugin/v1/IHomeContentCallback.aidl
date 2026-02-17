@@ -12,11 +12,11 @@ interface IHomeContentCallback {
      * Called when home content is fetched successfully.
      * @throws PluginException if fetching fails
      */
-    void onSuccess(in HomeContent content);
+    void onSuccess(in HomeContent content) = 1;
 
     /**
      * Called when fetching home content fails.
      * @param errorMessage Description of the error
      */
-    void onFailure(String errorMessage);
+    void onFailure(String errorMessage) = 2;
 }

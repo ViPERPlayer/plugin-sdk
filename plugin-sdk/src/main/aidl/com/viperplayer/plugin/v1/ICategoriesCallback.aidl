@@ -12,6 +12,5 @@ interface ICategoriesCallback {
      * Called when categories are fetched successfully.
      * @throws PluginException if fetching fails
      */
-    void onSuccess(in List<BrowseCategory> categories, String nextCursor);
+    void onSuccess(in List<BrowseCategory> categories, String nextCursor) = 1;
 }
-

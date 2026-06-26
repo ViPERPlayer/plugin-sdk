@@ -1,6 +1,7 @@
 package com.viperplayer.plugin.author
 
 import com.viperplayer.plugin.ipc.IViperHost
+import com.viperplayer.plugin.model.HostHandshake
 import com.viperplayer.plugin.model.IdRequest
 import com.viperplayer.plugin.model.PlayerState
 import com.viperplayer.plugin.model.PluginErrorBody
@@ -17,8 +18,18 @@ import com.viperplayer.plugin.protocol.awaitCall
  */
 class PluginHost internal constructor(
     private val host: IViperHost,
+    hostHandshake: HostHandshake,
 ) {
     private val requestIds = RequestIds()
+
+    /** Protocol version the host speaks; compare against [com.viperplayer.plugin.protocol.Protocol.VERSION]. */
+    val hostProtocolVersion: Int = hostHandshake.protocolVersion
+
+    /** The host app's version string. */
+    val hostVersion: String = hostHandshake.hostVersion
+
+    /** Opt-in host feature flags this plugin can adapt to. */
+    val hostFeatures: Set<String> = hostHandshake.features
 
     /** Read the current host-owned player state. */
     suspend fun getPlayerState(): PlayerState {

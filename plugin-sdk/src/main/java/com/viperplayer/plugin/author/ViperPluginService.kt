@@ -17,6 +17,7 @@ import com.viperplayer.plugin.model.DspClose
 import com.viperplayer.plugin.model.DspConfigure
 import com.viperplayer.plugin.model.DspOpenRequest
 import com.viperplayer.plugin.model.DspOpenResponse
+import com.viperplayer.plugin.model.HostHandshake
 import com.viperplayer.plugin.model.IdPageRequest
 import com.viperplayer.plugin.model.IdRequest
 import com.viperplayer.plugin.model.Lyrics
@@ -31,6 +32,7 @@ import com.viperplayer.plugin.model.BoolResult
 import com.viperplayer.plugin.model.SearchRequest
 import com.viperplayer.plugin.model.Song
 import com.viperplayer.plugin.protocol.Envelope
+import com.viperplayer.plugin.protocol.Protocol
 import com.viperplayer.plugin.protocol.Verbs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -92,7 +94,9 @@ abstract class ViperPluginService : Service() {
 
         override fun initialize(hostInfo: Bundle?, host: IViperHost?, callback: IInitCallback?) {
             if (host == null || callback == null) return
-            val pluginHost = PluginHost(host)
+            val handshake = hostInfo?.let { Envelope.payloadOrNull<HostHandshake>(it) }
+                ?: HostHandshake(Protocol.VERSION, "", emptySet())
+            val pluginHost = PluginHost(host, handshake)
             val onConnect = registration.onConnect
             if (onConnect == null) {
                 callback.onInitialized(Envelope.of(registration.toManifest()))

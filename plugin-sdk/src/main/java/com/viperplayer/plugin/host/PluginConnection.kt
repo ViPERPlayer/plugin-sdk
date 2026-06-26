@@ -140,6 +140,14 @@ class PluginConnection private constructor(
             connection.manifest = withTimeout(HANDSHAKE_TIMEOUT_MS) {
                 connection.handshake(HostHandshake(Protocol.VERSION, hostVersion, hostFeatures))
             }
+            // The codec is part of the negotiated contract; if the plugin speaks one this host can't
+            // decode, fail cleanly instead of throwing opaque deserialization errors on every call.
+            if (connection.manifest.codec != Protocol.CODEC_JSON) {
+                throw PluginException(
+                    PluginErrorCode.INCOMPATIBLE_HOST,
+                    "Plugin uses unsupported codec '${connection.manifest.codec}'",
+                )
+            }
             return connection
         }
     }

@@ -28,7 +28,13 @@ object PluginDiscovery {
         return services.mapNotNull { resolveInfo ->
             val serviceInfo = resolveInfo.serviceInfo ?: return@mapNotNull null
             val id = serviceInfo.packageName
-            val metaData = serviceInfo.metaData ?: serviceInfo.applicationInfo?.metaData
+            // queryIntentServices(GET_META_DATA) only fills the *component* meta-data, so
+            // <application>-level <meta-data> (where plugins usually declare NAME/DESCRIPTION) is
+            // dropped. Fetch the application meta-data explicitly as a fallback.
+            val appMetaData = runCatching {
+                pm.getApplicationInfo(id, PackageManager.GET_META_DATA).metaData
+            }.getOrNull()
+            val metaData = serviceInfo.metaData ?: appMetaData
             val name = metaData?.getString(Protocol.META_NAME)
                 ?: serviceInfo.loadLabel(pm).toString()
             val description = metaData?.getString(Protocol.META_DESCRIPTION)

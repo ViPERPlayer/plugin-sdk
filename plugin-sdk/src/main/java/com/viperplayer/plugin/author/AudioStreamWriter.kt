@@ -65,8 +65,9 @@ class AudioStreamWriter private constructor(
     fun closeWithError(message: String) {
         if (closed.compareAndSet(false, true)) {
             runCatching { output.flush() }
+            // closeWithError already closes the underlying write fd; closing `output`
+            // (an AutoCloseOutputStream over the same PFD) too would double-close it.
             runCatching { writeEnd.closeWithError(message) }
-            runCatching { output.close() }
         }
     }
 

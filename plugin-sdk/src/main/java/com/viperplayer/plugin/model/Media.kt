@@ -29,6 +29,15 @@ sealed interface MediaItem {
     val id: String
 }
 
+/**
+ * Fallback for a media kind a newer peer added that this peer doesn't understand. The codec decodes
+ * an unknown `#t` discriminator into this (instead of throwing and failing the whole list); the host
+ * skips it. Keeps a single new item type from breaking older hosts.
+ */
+@Serializable
+@SerialName("unknown")
+data class UnknownMediaItem(override val id: String = "") : MediaItem
+
 @Serializable
 @SerialName("song")
 data class Song(

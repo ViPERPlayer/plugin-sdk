@@ -5,6 +5,7 @@ import com.viperplayer.plugin.ipc.IResultCallback
 import com.viperplayer.plugin.model.PluginErrorBody
 import com.viperplayer.plugin.model.PluginException
 import kotlinx.coroutines.suspendCancellableCoroutine
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -29,19 +30,24 @@ internal suspend fun awaitCall(
     issue: (IResultCallback) -> Unit,
 ): CallResult = suspendCancellableCoroutine { cont ->
     val pages = ArrayList<Bundle>()
+    val done = AtomicBoolean(false) // exactly one terminal resume, even if a plugin misbehaves
     val callback = object : IResultCallback.Stub() {
         override fun onPage(page: Bundle) {
             synchronized(pages) { pages.add(page) }
         }
 
         override fun onComplete(result: Bundle) {
-            if (cont.isActive) cont.resume(CallResult(result, synchronized(pages) { pages.toList() }))
+            if (done.compareAndSet(false, true) && cont.isActive) {
+                cont.resume(CallResult(result, synchronized(pages) { pages.toList() }))
+            }
         }
 
         override fun onError(code: Int, message: String?, extras: Bundle?) {
-            if (!cont.isActive) return
-            val body = extras?.let { Envelope.payloadOrNull<PluginErrorBody>(it) }
-            cont.resumeWithException(
+            if (!done.compareAndSet(false, true)) return
+            // Decode defensively: a corrupt extras Bundle must not throw on the binder thread and
+            // leave the caller hung.
+            val body = runCatching { extras?.let { Envelope.payloadOrNull<PluginErrorBody>(it) } }.getOrNull()
+            if (cont.isActive) cont.resumeWithException(
                 if (body != null) PluginException.from(body) else PluginException(code, message)
             )
         }
@@ -50,7 +56,7 @@ internal suspend fun awaitCall(
     try {
         issue(callback)
     } catch (t: Throwable) {
-        if (cont.isActive) cont.resumeWithException(t)
+        if (done.compareAndSet(false, true) && cont.isActive) cont.resumeWithException(t)
     }
 }
 

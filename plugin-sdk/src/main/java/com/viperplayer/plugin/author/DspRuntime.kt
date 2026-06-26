@@ -58,6 +58,7 @@ internal class DspRuntime(
                 if (frames < 0) break
 
                 val count = frames * channels
+                if (count > audioBuffer.samples.size) break // more than negotiated; bail before overflow
                 inputBuffer.position(0)
                 inputBuffer.get(audioBuffer.samples, 0, count)
                 audioBuffer.frames = frames
@@ -87,7 +88,8 @@ internal class DspRuntime(
         runCatching { SharedMemory.unmap(outputMapped) }
         runCatching { inputShm.close() }
         runCatching { outputShm.close() }
-        runCatching { controlIn.close() }
-        runCatching { controlOut.close() }
+        // controlIn/controlOut wrap control's fd but don't own it; close the PFD once instead of
+        // closing each stream (which would double/triple-close the same fd).
+        runCatching { control.close() }
     }
 }

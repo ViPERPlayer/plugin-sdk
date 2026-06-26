@@ -19,6 +19,7 @@ import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
@@ -94,20 +95,33 @@ class DspChannel internal constructor(
     private val controlIn = DataInputStream(FileInputStream(hostSocket.fileDescriptor))
     private val controlOut = DataOutputStream(FileOutputStream(hostSocket.fileDescriptor))
 
+    private val lock = Any()
+
     @Volatile
     private var closed = false
 
     /** Process [frames] of interleaved float PCM in [samples] in place. */
     fun process(samples: FloatArray, frames: Int) {
-        if (closed) return
         val count = frames * channels
-        inputFloat.position(0)
-        inputFloat.put(samples, 0, count)
-        controlOut.writeInt(frames)
-        controlOut.flush()
-        controlIn.readInt() // wait for the plugin to finish this block
-        outputFloat.position(0)
-        outputFloat.get(samples, 0, count)
+        // Hold the lock only around shared-memory access so close()/unmap can't free the region
+        // mid-buffer (use-after-unmap -> native crash); the blocking ack wait stays outside it.
+        synchronized(lock) {
+            if (closed) return
+            inputFloat.position(0)
+            inputFloat.put(samples, 0, count)
+        }
+        try {
+            controlOut.writeInt(frames)
+            controlOut.flush()
+            controlIn.readInt() // wait for the plugin to finish this block
+        } catch (e: IOException) {
+            return // channel closed / plugin gone
+        }
+        synchronized(lock) {
+            if (closed) return
+            outputFloat.position(0)
+            outputFloat.get(samples, 0, count)
+        }
     }
 
     /** Push parameter values / enabled state to the plugin. */
@@ -117,14 +131,16 @@ class DspChannel internal constructor(
 
     /** Tear down the session (signals the plugin worker to stop, then releases local resources). */
     fun close() {
-        if (closed) return
-        closed = true
-        runCatching { controlOut.writeInt(-1); controlOut.flush() }
-        runCatching { connection } // session also reclaimed plugin-side when the socket closes
-        runCatching { SharedMemory.unmap(inputMapped) }
-        runCatching { SharedMemory.unmap(outputMapped) }
-        runCatching { controlIn.close() }
-        runCatching { controlOut.close() }
+        synchronized(lock) {
+            if (closed) return
+            closed = true
+            // Unmap under the lock so it can't overlap an in-flight process() buffer access.
+            runCatching { SharedMemory.unmap(inputMapped) }
+            runCatching { SharedMemory.unmap(outputMapped) }
+        }
+        runCatching { controlOut.writeInt(-1); controlOut.flush() } // tell the worker to stop
+        // controlIn/controlOut wrap hostSocket's fd but don't own it; close the PFD once instead of
+        // closing each stream (which would double/triple-close the same fd).
         runCatching { hostSocket.close() }
         runCatching { inputShm.close() }
         runCatching { outputShm.close() }

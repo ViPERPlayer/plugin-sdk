@@ -33,6 +33,7 @@ import com.viperplayer.plugin.model.Song
 import com.viperplayer.plugin.protocol.Envelope
 import com.viperplayer.plugin.protocol.Verbs
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
@@ -110,7 +111,10 @@ abstract class ViperPluginService : Service() {
         override fun invoke(verb: String?, requestId: Long, args: Bundle?, callback: IResultCallback?) {
             if (verb == null || callback == null) return
             val argsBundle = args ?: Bundle()
-            val job = scope.launch {
+            // Register the Job before starting it: a fast verb could otherwise reach the finally{}
+            // remove() before we put it in the map, leaving a stale entry that's never removed (and
+            // a cancel() in that window would find nothing to cancel).
+            val job = scope.launch(start = CoroutineStart.LAZY) {
                 try {
                     dispatch(verb, argsBundle, callback)
                 } catch (c: CancellationException) {
@@ -122,6 +126,7 @@ abstract class ViperPluginService : Service() {
                 }
             }
             requests[requestId] = job
+            job.start()
         }
 
         override fun cancel(requestId: Long) {
@@ -186,6 +191,9 @@ abstract class ViperPluginService : Service() {
             Verbs.Source.RESOLVE_STREAM -> {
                 val response = source().resolveStream(idOf(args))
                 cb.onComplete(Envelope.of(response.source, fd = response.fd))
+                // onComplete already dup'd the read end into the host; close our local copy so the
+                // plugin process doesn't leak a descriptor per resolved PCM stream.
+                response.fd?.let { runCatching { it.close() } }
             }
             Verbs.Source.SEEK_STREAM -> Envelope.payload<SeekStreamRequest>(args).let {
                 cb.onComplete(Envelope.of(BoolResult(source().seekStream(it.streamId, it.positionMs))))
@@ -237,23 +245,35 @@ abstract class ViperPluginService : Service() {
         val provider = registration.dsp
             ?: throw PluginException(PluginErrorCode.UNSUPPORTED, "No DSP provider")
         val request = Envelope.payload<DspOpenRequest>(args)
+        // These are dup'd handles we now own; close them if the open can't complete.
         val inputShm = Envelope.sharedMemory(args)
-            ?: throw PluginException(PluginErrorCode.INVALID_REQUEST, "Missing input shared memory")
         val outputShm = Envelope.sharedMemory2(args)
-            ?: throw PluginException(PluginErrorCode.INVALID_REQUEST, "Missing output shared memory")
         val control = Envelope.fd(args)
-            ?: throw PluginException(PluginErrorCode.INVALID_REQUEST, "Missing control descriptor")
+        if (inputShm == null || outputShm == null || control == null) {
+            runCatching { inputShm?.close() }
+            runCatching { outputShm?.close() }
+            runCatching { control?.close() }
+            throw PluginException(PluginErrorCode.INVALID_REQUEST, "Missing DSP shared memory / control descriptor")
+        }
 
-        val session = provider.createSession(request.format, request.maxFramesPerBlock)
         val sessionId = UUID.randomUUID().toString()
-        val runtime = DspRuntime(
-            session = session,
-            channels = request.format.channelCount,
-            maxFramesPerBlock = request.maxFramesPerBlock,
-            inputShm = inputShm,
-            outputShm = outputShm,
-            control = control,
-        )
+        val runtime = try {
+            val session = provider.createSession(request.format, request.maxFramesPerBlock)
+            DspRuntime(
+                session = session,
+                channels = request.format.channelCount,
+                maxFramesPerBlock = request.maxFramesPerBlock,
+                inputShm = inputShm,
+                outputShm = outputShm,
+                control = control,
+            )
+        } catch (e: Throwable) {
+            // The DspRuntime now owns these once constructed; on failure before that, close them.
+            runCatching { inputShm.close() }
+            runCatching { outputShm.close() }
+            runCatching { control.close() }
+            throw e
+        }
         dspSessions[sessionId] = runtime
         runtime.start()
         cb.onComplete(Envelope.of(DspOpenResponse(sessionId)))

@@ -21,6 +21,7 @@ import com.viperplayer.plugin.protocol.awaitCall
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withTimeout
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -117,6 +118,8 @@ class PluginConnection private constructor(
         }
 
     companion object {
+        private const val HANDSHAKE_TIMEOUT_MS = 10_000L
+
         /**
          * Wrap a bound [binder] and perform the handshake. Returns a ready connection or throws
          * [PluginException] if the plugin rejects the host or the handshake fails.
@@ -132,9 +135,11 @@ class PluginConnection private constructor(
             val plugin = IViperPlugin.Stub.asInterface(binder)
                 ?: throw PluginException(PluginErrorCode.INTERNAL, "Binder is not an IViperPlugin")
             val connection = PluginConnection(pluginId, plugin, scope, hostBridge)
-            connection.manifest = connection.handshake(
-                HostHandshake(Protocol.VERSION, hostVersion, hostFeatures)
-            )
+            // A silent plugin (initialize returns but never invokes the init callback) must not hang
+            // the connection forever; time out so the binding can be cleaned up.
+            connection.manifest = withTimeout(HANDSHAKE_TIMEOUT_MS) {
+                connection.handshake(HostHandshake(Protocol.VERSION, hostVersion, hostFeatures))
+            }
             return connection
         }
     }

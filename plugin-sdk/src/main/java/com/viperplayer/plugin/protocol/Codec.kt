@@ -1,6 +1,11 @@
 package com.viperplayer.plugin.protocol
 
+import com.viperplayer.plugin.model.MediaItem
+import com.viperplayer.plugin.model.StreamSource
+import com.viperplayer.plugin.model.UnknownMediaItem
+import com.viperplayer.plugin.model.UnknownStream
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
 
 /**
  * The payload codec — a deliberately tolerant JSON serializer carried as bytes inside Bundles.
@@ -12,6 +17,10 @@ import kotlinx.serialization.json.Json
  *    the receiver fills the default.
  *  - [Json.explicitNulls] = false: nulls are omitted (smaller payloads); absent decodes to the
  *    field default (null for nullable fields).
+ *  - [Json.coerceInputValues]: an unknown enum constant from a newer peer decodes to the field's
+ *    default instead of throwing.
+ *  - polymorphic default deserializers: an unknown sealed subtype (a newer peer's new MediaItem /
+ *    StreamSource kind) decodes to an Unknown* fallback instead of failing the whole payload.
  *
  * Together these give safe evolution in both directions without versioning individual payloads.
  */
@@ -21,7 +30,12 @@ object Codec {
         encodeDefaults = true
         explicitNulls = false
         isLenient = true
+        coerceInputValues = true
         classDiscriminator = "#t"
+        serializersModule = SerializersModule {
+            polymorphicDefaultDeserializer(MediaItem::class) { UnknownMediaItem.serializer() }
+            polymorphicDefaultDeserializer(StreamSource::class) { UnknownStream.serializer() }
+        }
     }
 
     inline fun <reified T> encode(value: T): ByteArray =

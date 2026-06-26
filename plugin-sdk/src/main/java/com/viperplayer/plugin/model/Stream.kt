@@ -27,6 +27,14 @@ sealed interface StreamSource {
     val peakAmplitude: Float?
 }
 
+/** Fallback for a stream kind a newer plugin added that this host doesn't understand. */
+@Serializable
+@SerialName("unknown")
+data class UnknownStream(
+    override val replayGainDb: Float? = null,
+    override val peakAmplitude: Float? = null,
+) : StreamSource
+
 /** A directly playable progressive/HTTP(S) URL (or `content://`). */
 @Serializable
 @SerialName("url")

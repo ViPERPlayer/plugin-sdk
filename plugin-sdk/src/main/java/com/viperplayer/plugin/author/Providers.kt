@@ -6,6 +6,7 @@ import com.viperplayer.plugin.model.BrowseCategory
 import com.viperplayer.plugin.model.HomeContent
 import com.viperplayer.plugin.model.Lyrics
 import com.viperplayer.plugin.model.LyricsRequest
+import com.viperplayer.plugin.model.MediaType
 import com.viperplayer.plugin.model.Page
 import com.viperplayer.plugin.model.PageRequest
 import com.viperplayer.plugin.model.PlaybackEvent
@@ -66,10 +67,12 @@ interface SourceProvider {
     suspend fun getHome(): HomeContent = HomeContent()
 
     /**
-     * Resolve how a track should be played. Return a [StreamResponse] built via its factories
-     * ([StreamResponse.url], [StreamResponse.dash], [StreamResponse.pcm], …).
+     * Resolve how a playable should be played. [type] is [MediaType.SONG] for audio or
+     * [MediaType.VIDEO] for a music video, so a plugin with separate audio/video endpoints can pick
+     * the right one. Return a [StreamResponse] built via its factories ([StreamResponse.url],
+     * [StreamResponse.dash], [StreamResponse.pcm], …).
      */
-    suspend fun resolveStream(songId: String): StreamResponse
+    suspend fun resolveStream(songId: String, type: MediaType): StreamResponse
 
     /** Seek a live PCM stream, if [com.viperplayer.plugin.model.PcmStream.seekable]. */
     suspend fun seekStream(streamId: String, positionMs: Long): Boolean = false

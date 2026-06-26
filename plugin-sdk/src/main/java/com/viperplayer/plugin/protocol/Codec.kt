@@ -1,8 +1,10 @@
 package com.viperplayer.plugin.protocol
 
 import com.viperplayer.plugin.model.MediaItem
+import com.viperplayer.plugin.model.PlayableItem
 import com.viperplayer.plugin.model.StreamSource
 import com.viperplayer.plugin.model.UnknownMediaItem
+import com.viperplayer.plugin.model.UnknownPlayableItem
 import com.viperplayer.plugin.model.UnknownStream
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
@@ -34,6 +36,7 @@ object Codec {
         classDiscriminator = "#t"
         serializersModule = SerializersModule {
             polymorphicDefaultDeserializer(MediaItem::class) { UnknownMediaItem.serializer() }
+            polymorphicDefaultDeserializer(PlayableItem::class) { UnknownPlayableItem.serializer() }
             polymorphicDefaultDeserializer(StreamSource::class) { UnknownStream.serializer() }
         }
     }

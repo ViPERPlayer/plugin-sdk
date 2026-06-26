@@ -11,6 +11,8 @@ import com.viperplayer.plugin.model.IdPageRequest
 import com.viperplayer.plugin.model.IdRequest
 import com.viperplayer.plugin.model.Lyrics
 import com.viperplayer.plugin.model.LyricsRequest
+import com.viperplayer.plugin.model.MediaType
+import com.viperplayer.plugin.model.ResolveStreamRequest
 import com.viperplayer.plugin.model.PluginManifest
 import com.viperplayer.plugin.model.Page
 import com.viperplayer.plugin.model.PageRequest
@@ -106,8 +108,10 @@ class SourceClient internal constructor(
     suspend fun getHome(): HomeContent =
         Envelope.payload(connection.invokeRaw(Verbs.Source.HOME, Envelope.empty()).result)
 
-    suspend fun resolveStream(songId: String): ResolvedStream {
-        val result = connection.invokeRaw(Verbs.Source.RESOLVE_STREAM, Envelope.of(IdRequest(songId))).result
+    suspend fun resolveStream(songId: String, type: MediaType): ResolvedStream {
+        val result = connection.invokeRaw(
+            Verbs.Source.RESOLVE_STREAM, Envelope.of(ResolveStreamRequest(songId, type))
+        ).result
         return ResolvedStream(Envelope.payload<StreamSource>(result), Envelope.fd(result))
     }
 

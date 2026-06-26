@@ -18,6 +18,14 @@ data class QueryRequest(val query: String)
 @Serializable
 data class CategoryContentsRequest(val categoryId: String, val page: PageRequest = PageRequest())
 
+/**
+ * Resolve a playable's stream. [type] tells the plugin whether this is audio ([MediaType.SONG]) or
+ * video ([MediaType.VIDEO]) so it can use the right endpoint. Defaults to SONG for tolerant decoding
+ * of an older host that only sent an id.
+ */
+@Serializable
+data class ResolveStreamRequest(val id: String, val type: MediaType = MediaType.SONG)
+
 @Serializable
 data class SeekStreamRequest(val streamId: String, val positionMs: Long)
 

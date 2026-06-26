@@ -1,0 +1,74 @@
+package com.viperplayer.plugin.model
+
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+enum class PcmEncoding { PCM_16BIT, PCM_24BIT, PCM_FLOAT }
+
+@Serializable
+data class AudioFormat(
+    val sampleRate: Int = 44100,
+    val channelCount: Int = 2,
+    val encoding: PcmEncoding = PcmEncoding.PCM_16BIT,
+)
+
+/**
+ * How a track should be played. The host owns the player; this just tells it where/how to get the
+ * audio. Sealed so new delivery methods can be added as new variants.
+ *
+ * For [PcmStream] the actual data does not live in this object — it flows through a
+ * [android.os.ParcelFileDescriptor] carried alongside this metadata in the transaction Bundle, so
+ * raw audio never hits the binder limit.
+ */
+@Serializable
+sealed interface StreamSource {
+    val replayGainDb: Float?
+    val peakAmplitude: Float?
+}
+
+/** A directly playable progressive/HTTP(S) URL (or `content://`). */
+@Serializable
+@SerialName("url")
+data class UrlStream(
+    val url: String,
+    val mimeType: String? = null,
+    val headers: Map<String, String> = emptyMap(),
+    override val replayGainDb: Float? = null,
+    override val peakAmplitude: Float? = null,
+) : StreamSource
+
+/** A DASH stream, given either inline manifest XML or a manifest URL. */
+@Serializable
+@SerialName("dash")
+data class DashStream(
+    val manifest: String? = null,
+    val manifestUrl: String? = null,
+    override val replayGainDb: Float? = null,
+    override val peakAmplitude: Float? = null,
+) : StreamSource
+
+/** An HLS stream URL. */
+@Serializable
+@SerialName("hls")
+data class HlsStream(
+    val url: String,
+    override val replayGainDb: Float? = null,
+    override val peakAmplitude: Float? = null,
+) : StreamSource
+
+/**
+ * Raw PCM produced by the plugin and streamed to the host through a pipe FD (carried in the
+ * Bundle). [streamId] correlates later seek/close calls; [seekable] reports whether the plugin can
+ * honour a seek.
+ */
+@Serializable
+@SerialName("pcm")
+data class PcmStream(
+    val streamId: String,
+    val format: AudioFormat,
+    val durationMs: Long? = null,
+    val seekable: Boolean = false,
+    override val replayGainDb: Float? = null,
+    override val peakAmplitude: Float? = null,
+) : StreamSource

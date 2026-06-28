@@ -201,7 +201,7 @@ abstract class ViperPluginService : Service() {
             // ---- Source: streaming ----
             Verbs.Source.RESOLVE_STREAM -> {
                 val request = Envelope.payload<ResolveStreamRequest>(args)
-                val response = source().resolveStream(request.id, request.type)
+                val response = source().resolveStream(request.id, request.type, request.maxBitrateKbps)
                 cb.onComplete(Envelope.of(response.source, fd = response.fd))
                 // onComplete already dup'd the read end into the host; close our local copy so the
                 // plugin process doesn't leak a descriptor per resolved PCM stream.

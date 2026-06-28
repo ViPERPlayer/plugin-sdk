@@ -85,9 +85,10 @@ interface SourceProvider {
      * Resolve how a playable should be played. [type] is [MediaType.SONG] for audio or
      * [MediaType.VIDEO] for a music video, so a plugin with separate audio/video endpoints can pick
      * the right one. Return a [StreamResponse] built via its factories ([StreamResponse.url],
-     * [StreamResponse.dash], [StreamResponse.pcm], …).
+     * [StreamResponse.dash], [StreamResponse.pcm], …). [maxBitrateKbps] is the host's audio-quality
+     * cap (from the user's setting); null means no cap — serve the highest quality available.
      */
-    suspend fun resolveStream(songId: String, type: MediaType): StreamResponse
+    suspend fun resolveStream(songId: String, type: MediaType, maxBitrateKbps: Int? = null): StreamResponse
 
     /** Seek a live PCM stream, if [com.viperplayer.plugin.model.PcmStream.seekable]. */
     suspend fun seekStream(streamId: String, positionMs: Long): Boolean = false

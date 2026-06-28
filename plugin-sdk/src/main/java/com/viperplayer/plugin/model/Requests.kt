@@ -28,7 +28,12 @@ data class FilterSectionRequest(val sectionId: String, val filterKey: String)
  * of an older host that only sent an id.
  */
 @Serializable
-data class ResolveStreamRequest(val id: String, val type: MediaType = MediaType.SONG)
+data class ResolveStreamRequest(
+    val id: String,
+    val type: MediaType = MediaType.SONG,
+    /** Host's max audio bitrate (kbps) from the user's quality setting; null = no cap (highest). */
+    val maxBitrateKbps: Int? = null,
+)
 
 @Serializable
 data class SeekStreamRequest(val streamId: String, val positionMs: Long)

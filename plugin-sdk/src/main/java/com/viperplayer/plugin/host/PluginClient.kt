@@ -115,9 +115,9 @@ class SourceClient internal constructor(
     suspend fun filterSection(sectionId: String, filterKey: String): SearchResult =
         Envelope.payload(connection.invokeRaw(Verbs.Source.FILTER_SECTION, Envelope.of(FilterSectionRequest(sectionId, filterKey))).result)
 
-    suspend fun resolveStream(songId: String, type: MediaType): ResolvedStream {
+    suspend fun resolveStream(songId: String, type: MediaType, maxBitrateKbps: Int? = null): ResolvedStream {
         val result = connection.invokeRaw(
-            Verbs.Source.RESOLVE_STREAM, Envelope.of(ResolveStreamRequest(songId, type))
+            Verbs.Source.RESOLVE_STREAM, Envelope.of(ResolveStreamRequest(songId, type, maxBitrateKbps))
         ).result
         return ResolvedStream(Envelope.payload<StreamSource>(result), Envelope.fd(result))
     }

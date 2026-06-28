@@ -76,7 +76,10 @@ sealed interface HomeSection {
     val action: SectionAction?
 }
 
-/** Horizontal scroller of cards — the most common design. */
+/**
+ * Horizontal scroller of cards — the most common design. [rows] > 1 stacks items into that many
+ * rows that scroll together horizontally (a multi-row "shelf"); the default 1 is a single row.
+ */
 @Serializable
 @SerialName("carousel")
 data class CarouselSection(
@@ -86,6 +89,7 @@ data class CarouselSection(
     override val action: SectionAction? = null,
     val items: List<MediaItem> = emptyList(),
     val itemShape: ItemShape = ItemShape.SQUARE,
+    val rows: Int = 1,
 ) : HomeSection
 
 /** Multi-column grid of cards. */

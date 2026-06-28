@@ -20,6 +20,7 @@ object Verbs {
         const val ARTIST_SONGS = "source.artistSongs"
         const val ARTIST_ALBUMS = "source.artistAlbums"
         const val PLAYLIST_SONGS = "source.playlistSongs"
+        const val RELATED_SONGS = "source.relatedSongs"
 
         const val LIBRARY_SONGS = "source.library.songs"
         const val LIBRARY_ALBUMS = "source.library.albums"

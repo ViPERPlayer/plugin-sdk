@@ -56,11 +56,25 @@ data class DashStream(
     override val peakAmplitude: Float? = null,
 ) : StreamSource
 
-/** An HLS stream URL. */
+/**
+ * DRM parameters for an encrypted stream. [scheme] names the DRM system (e.g. "widevine"); the host
+ * maps it to the matching content-protection UUID. [licenseUrl] is the license server endpoint the
+ * host POSTs key requests to, with [licenseHeaders] attached. Kept generic so other schemes can be
+ * added without a wire change.
+ */
+@Serializable
+data class DrmConfig(
+    val scheme: String,
+    val licenseUrl: String,
+    val licenseHeaders: Map<String, String> = emptyMap(),
+)
+
+/** An HLS stream URL, optionally protected by [drm] (e.g. Widevine). */
 @Serializable
 @SerialName("hls")
 data class HlsStream(
     val url: String,
+    val drm: DrmConfig? = null,
     override val replayGainDb: Float? = null,
     override val peakAmplitude: Float? = null,
 ) : StreamSource

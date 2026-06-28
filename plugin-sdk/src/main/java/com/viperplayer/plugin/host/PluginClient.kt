@@ -88,6 +88,9 @@ class SourceClient internal constructor(
     suspend fun getPlaylistSongs(playlistId: String, page: PageRequest = PageRequest()): Page<Song> =
         Envelope.payload(connection.invokeRaw(Verbs.Source.PLAYLIST_SONGS, Envelope.of(IdPageRequest(playlistId, page))).result)
 
+    suspend fun getRelatedSongs(songId: String): Page<Song> =
+        Envelope.payload(connection.invokeRaw(Verbs.Source.RELATED_SONGS, Envelope.of(IdRequest(songId))).result)
+
     suspend fun getLibrarySongs(page: PageRequest = PageRequest()): Page<Song> =
         Envelope.payload(connection.invokeRaw(Verbs.Source.LIBRARY_SONGS, Envelope.of(page)).result)
 

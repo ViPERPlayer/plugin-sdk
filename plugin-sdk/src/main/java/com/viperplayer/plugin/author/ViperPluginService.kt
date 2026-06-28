@@ -173,6 +173,8 @@ abstract class ViperPluginService : Service() {
             Verbs.Source.PLAYLIST_SONGS -> idPage(args).let {
                 cb.onComplete(Envelope.of(source().getPlaylistSongs(it.id, it.page)))
             }
+            Verbs.Source.RELATED_SONGS ->
+                cb.onComplete(Envelope.of(source().getRelatedSongs(idOf(args))))
 
             // ---- Source: library ----
             Verbs.Source.LIBRARY_SONGS ->

@@ -52,6 +52,13 @@ interface SourceProvider {
 
     suspend fun getPlaylistSongs(playlistId: String, page: PageRequest): Page<Song> = Page()
 
+    /**
+     * Songs related to [songId] — a radio / autoplay seed. The host appends these to keep playback
+     * going when the queue runs out (a playlist/album ends, or a single song from search finishes).
+     * Default returns empty, i.e. no autoplay for this plugin.
+     */
+    suspend fun getRelatedSongs(songId: String): Page<Song> = Page()
+
     suspend fun getLibrarySongs(page: PageRequest): Page<Song> = Page()
 
     suspend fun getLibraryAlbums(page: PageRequest): Page<Album> = Page()

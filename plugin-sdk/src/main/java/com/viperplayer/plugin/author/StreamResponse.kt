@@ -2,6 +2,7 @@ package com.viperplayer.plugin.author
 
 import android.os.ParcelFileDescriptor
 import com.viperplayer.plugin.model.DashStream
+import com.viperplayer.plugin.model.DrmConfig
 import com.viperplayer.plugin.model.HlsStream
 import com.viperplayer.plugin.model.PcmStream
 import com.viperplayer.plugin.model.StreamSource
@@ -40,9 +41,10 @@ class StreamResponse private constructor(
 
         fun hls(
             url: String,
+            drm: DrmConfig? = null,
             replayGainDb: Float? = null,
             peakAmplitude: Float? = null,
-        ): StreamResponse = StreamResponse(HlsStream(url, replayGainDb, peakAmplitude), null)
+        ): StreamResponse = StreamResponse(HlsStream(url, drm, replayGainDb, peakAmplitude), null)
 
         /** Stream raw PCM from a writer. The writer's read FD is handed to the host automatically. */
         fun pcm(

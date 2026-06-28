@@ -63,6 +63,19 @@ data class SectionAction(
 )
 
 /**
+ * An interactive chip on a section (e.g. a genre selector). Tapping it asks the owning plugin to
+ * [com.viperplayer.plugin.author.SourceProvider.filterSection] this section by [key]; the host swaps
+ * the returned items in and marks the tapped chip [selected].
+ */
+@Serializable
+data class SectionFilter(
+    val label: String,
+    /** Opaque, plugin-defined filter id passed back to `filterSection`. */
+    val key: String,
+    val selected: Boolean = false,
+)
+
+/**
  * A home-screen section. Sealed so each visual design carries exactly the fields it needs and can
  * travel polymorphically (the codec tags each with its `#t` discriminator). A design a newer plugin
  * emits that this host doesn't understand decodes to [UnknownSection] and is skipped, rather than
@@ -90,6 +103,7 @@ data class CarouselSection(
     val items: List<MediaItem> = emptyList(),
     val itemShape: ItemShape = ItemShape.SQUARE,
     val rows: Int = 1,
+    val filters: List<SectionFilter> = emptyList(),
 ) : HomeSection
 
 /** Multi-column grid of cards. */

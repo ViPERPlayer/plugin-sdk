@@ -18,6 +18,10 @@ data class QueryRequest(val query: String)
 @Serializable
 data class CategoryContentsRequest(val categoryId: String, val page: PageRequest = PageRequest())
 
+/** Re-fetch a home section's items for a tapped filter chip. */
+@Serializable
+data class FilterSectionRequest(val sectionId: String, val filterKey: String)
+
 /**
  * Resolve a playable's stream. [type] tells the plugin whether this is audio ([MediaType.SONG]) or
  * video ([MediaType.VIDEO]) so it can use the right endpoint. Defaults to SONG for tolerant decoding

@@ -30,6 +30,7 @@ object Verbs {
         const val CATEGORY_CONTENTS = "source.browse.category"
 
         const val HOME = "source.home"
+        const val FILTER_SECTION = "source.filterSection"
 
         const val RESOLVE_STREAM = "source.resolveStream"
         const val SEEK_STREAM = "source.seekStream"

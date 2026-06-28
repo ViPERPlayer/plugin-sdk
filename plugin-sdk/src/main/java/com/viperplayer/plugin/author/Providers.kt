@@ -67,6 +67,14 @@ interface SourceProvider {
     suspend fun getHome(): HomeContent = HomeContent()
 
     /**
+     * Re-fetch a home section's items for the tapped filter chip. [sectionId] is the section the chip
+     * belongs to and [filterKey] is the chosen [com.viperplayer.plugin.model.SectionFilter.key]. The
+     * host keeps the section's title/rows/chips and swaps in the returned items. Default returns empty
+     * so plugins without filterable sections are unaffected.
+     */
+    suspend fun filterSection(sectionId: String, filterKey: String): SearchResult = SearchResult()
+
+    /**
      * Resolve how a playable should be played. [type] is [MediaType.SONG] for audio or
      * [MediaType.VIDEO] for a music video, so a plugin with separate audio/video endpoints can pick
      * the right one. Return a [StreamResponse] built via its factories ([StreamResponse.url],

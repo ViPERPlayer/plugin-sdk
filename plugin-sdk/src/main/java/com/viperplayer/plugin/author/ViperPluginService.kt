@@ -17,6 +17,7 @@ import com.viperplayer.plugin.model.DspClose
 import com.viperplayer.plugin.model.DspConfigure
 import com.viperplayer.plugin.model.DspOpenRequest
 import com.viperplayer.plugin.model.DspOpenResponse
+import com.viperplayer.plugin.model.FilterSectionRequest
 import com.viperplayer.plugin.model.HostHandshake
 import com.viperplayer.plugin.model.IdPageRequest
 import com.viperplayer.plugin.model.IdRequest
@@ -191,6 +192,9 @@ abstract class ViperPluginService : Service() {
             }
             Verbs.Source.HOME ->
                 cb.onComplete(Envelope.of(source().getHome()))
+            Verbs.Source.FILTER_SECTION -> Envelope.payload<FilterSectionRequest>(args).let {
+                cb.onComplete(Envelope.of(source().filterSection(it.sectionId, it.filterKey)))
+            }
 
             // ---- Source: streaming ----
             Verbs.Source.RESOLVE_STREAM -> {

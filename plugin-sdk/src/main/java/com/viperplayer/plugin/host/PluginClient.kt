@@ -6,6 +6,7 @@ import com.viperplayer.plugin.model.BoolResult
 import com.viperplayer.plugin.model.BrowseCategory
 import com.viperplayer.plugin.model.Capability
 import com.viperplayer.plugin.model.CategoryContentsRequest
+import com.viperplayer.plugin.model.FilterSectionRequest
 import com.viperplayer.plugin.model.HomeContent
 import com.viperplayer.plugin.model.IdPageRequest
 import com.viperplayer.plugin.model.IdRequest
@@ -107,6 +108,9 @@ class SourceClient internal constructor(
 
     suspend fun getHome(): HomeContent =
         Envelope.payload(connection.invokeRaw(Verbs.Source.HOME, Envelope.empty()).result)
+
+    suspend fun filterSection(sectionId: String, filterKey: String): SearchResult =
+        Envelope.payload(connection.invokeRaw(Verbs.Source.FILTER_SECTION, Envelope.of(FilterSectionRequest(sectionId, filterKey))).result)
 
     suspend fun resolveStream(songId: String, type: MediaType): ResolvedStream {
         val result = connection.invokeRaw(

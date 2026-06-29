@@ -25,6 +25,8 @@ data class AudioFormat(
 sealed interface StreamSource {
     val replayGainDb: Float?
     val peakAmplitude: Float?
+    val albumReplayGainDb: Float?
+    val albumPeakAmplitude: Float?
 }
 
 /** Fallback for a stream kind a newer plugin added that this host doesn't understand. */
@@ -33,6 +35,8 @@ sealed interface StreamSource {
 data class UnknownStream(
     override val replayGainDb: Float? = null,
     override val peakAmplitude: Float? = null,
+    override val albumReplayGainDb: Float? = null,
+    override val albumPeakAmplitude: Float? = null,
 ) : StreamSource
 
 /** A directly playable progressive/HTTP(S) URL (or `content://`). */
@@ -44,6 +48,8 @@ data class UrlStream(
     val headers: Map<String, String> = emptyMap(),
     override val replayGainDb: Float? = null,
     override val peakAmplitude: Float? = null,
+    override val albumReplayGainDb: Float? = null,
+    override val albumPeakAmplitude: Float? = null,
 ) : StreamSource
 
 /** A DASH stream, given either inline manifest XML or a manifest URL. */
@@ -54,6 +60,8 @@ data class DashStream(
     val manifestUrl: String? = null,
     override val replayGainDb: Float? = null,
     override val peakAmplitude: Float? = null,
+    override val albumReplayGainDb: Float? = null,
+    override val albumPeakAmplitude: Float? = null,
 ) : StreamSource
 
 /**
@@ -77,6 +85,8 @@ data class HlsStream(
     val drm: DrmConfig? = null,
     override val replayGainDb: Float? = null,
     override val peakAmplitude: Float? = null,
+    override val albumReplayGainDb: Float? = null,
+    override val albumPeakAmplitude: Float? = null,
 ) : StreamSource
 
 /**
@@ -93,4 +103,6 @@ data class PcmStream(
     val seekable: Boolean = false,
     override val replayGainDb: Float? = null,
     override val peakAmplitude: Float? = null,
+    override val albumReplayGainDb: Float? = null,
+    override val albumPeakAmplitude: Float? = null,
 ) : StreamSource

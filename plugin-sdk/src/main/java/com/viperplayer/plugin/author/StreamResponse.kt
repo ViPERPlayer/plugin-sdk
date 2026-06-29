@@ -26,8 +26,10 @@ class StreamResponse private constructor(
             headers: Map<String, String> = emptyMap(),
             replayGainDb: Float? = null,
             peakAmplitude: Float? = null,
+            albumReplayGainDb: Float? = null,
+            albumPeakAmplitude: Float? = null,
         ): StreamResponse = StreamResponse(
-            UrlStream(url, mimeType, headers, replayGainDb, peakAmplitude), null
+            UrlStream(url, mimeType, headers, replayGainDb, peakAmplitude, albumReplayGainDb, albumPeakAmplitude), null
         )
 
         fun dash(
@@ -35,8 +37,10 @@ class StreamResponse private constructor(
             manifestUrl: String? = null,
             replayGainDb: Float? = null,
             peakAmplitude: Float? = null,
+            albumReplayGainDb: Float? = null,
+            albumPeakAmplitude: Float? = null,
         ): StreamResponse = StreamResponse(
-            DashStream(manifest, manifestUrl, replayGainDb, peakAmplitude), null
+            DashStream(manifest, manifestUrl, replayGainDb, peakAmplitude, albumReplayGainDb, albumPeakAmplitude), null
         )
 
         fun hls(
@@ -44,13 +48,17 @@ class StreamResponse private constructor(
             drm: DrmConfig? = null,
             replayGainDb: Float? = null,
             peakAmplitude: Float? = null,
-        ): StreamResponse = StreamResponse(HlsStream(url, drm, replayGainDb, peakAmplitude), null)
+            albumReplayGainDb: Float? = null,
+            albumPeakAmplitude: Float? = null,
+        ): StreamResponse = StreamResponse(HlsStream(url, drm, replayGainDb, peakAmplitude, albumReplayGainDb, albumPeakAmplitude), null)
 
         /** Stream raw PCM from a writer. The writer's read FD is handed to the host automatically. */
         fun pcm(
             writer: AudioStreamWriter,
             replayGainDb: Float? = null,
             peakAmplitude: Float? = null,
+            albumReplayGainDb: Float? = null,
+            albumPeakAmplitude: Float? = null,
         ): StreamResponse = StreamResponse(
             PcmStream(
                 streamId = writer.streamId,
@@ -59,6 +67,8 @@ class StreamResponse private constructor(
                 seekable = writer.seekable,
                 replayGainDb = replayGainDb,
                 peakAmplitude = peakAmplitude,
+                albumReplayGainDb = albumReplayGainDb,
+                albumPeakAmplitude = albumPeakAmplitude,
             ),
             writer.hostFd,
         )

@@ -52,12 +52,14 @@ data class UrlStream(
     override val albumPeakAmplitude: Float? = null,
 ) : StreamSource
 
-/** A DASH stream, given either inline manifest XML or a manifest URL. */
+/** A DASH stream, given either inline manifest XML or a manifest URL, optionally protected by [drm]
+ *  (e.g. inline ClearKey for a single-file CENC MP4 wrapped in a synthetic manifest). */
 @Serializable
 @SerialName("dash")
 data class DashStream(
     val manifest: String? = null,
     val manifestUrl: String? = null,
+    val drm: DrmConfig? = null,
     override val replayGainDb: Float? = null,
     override val peakAmplitude: Float? = null,
     override val albumReplayGainDb: Float? = null,
@@ -65,16 +67,23 @@ data class DashStream(
 ) : StreamSource
 
 /**
- * DRM parameters for an encrypted stream. [scheme] names the DRM system (e.g. "widevine"); the host
- * maps it to the matching content-protection UUID. [licenseUrl] is the license server endpoint the
- * host POSTs key requests to, with [licenseHeaders] attached. Kept generic so other schemes can be
- * added without a wire change.
+ * DRM parameters for an encrypted stream. [scheme] names the DRM system (e.g. "widevine",
+ * "clearkey"); the host maps it to the matching content-protection UUID.
+ *
+ * Two mutually-exclusive key-delivery modes, so the same generic config covers both a real license
+ * server and inline keys:
+ *  - **License server**: set [licenseUrl] (the endpoint the host POSTs key requests to) plus any
+ *    [licenseHeaders]. Used for Widevine/PlayReady/ClearKey-over-HTTP.
+ *  - **Inline ClearKey**: set [clearKeys] as `keyId -> key`, both lowercase hex (16 bytes / 32 hex
+ *    chars each). The host serves them locally (no network license request) — e.g. a single-file
+ *    CENC MP4 whose raw content key the plugin already holds. Only meaningful with `scheme="clearkey"`.
  */
 @Serializable
 data class DrmConfig(
     val scheme: String,
-    val licenseUrl: String,
+    val licenseUrl: String? = null,
     val licenseHeaders: Map<String, String> = emptyMap(),
+    val clearKeys: Map<String, String> = emptyMap(),
 )
 
 /** An HLS stream URL, optionally protected by [drm] (e.g. Widevine). */

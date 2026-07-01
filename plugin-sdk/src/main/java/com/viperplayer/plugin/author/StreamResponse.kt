@@ -35,12 +35,14 @@ class StreamResponse private constructor(
         fun dash(
             manifest: String? = null,
             manifestUrl: String? = null,
+            drm: DrmConfig? = null,
             replayGainDb: Float? = null,
             peakAmplitude: Float? = null,
             albumReplayGainDb: Float? = null,
             albumPeakAmplitude: Float? = null,
         ): StreamResponse = StreamResponse(
-            DashStream(manifest, manifestUrl, replayGainDb, peakAmplitude, albumReplayGainDb, albumPeakAmplitude), null
+            DashStream(manifest, manifestUrl, drm, replayGainDb, peakAmplitude, albumReplayGainDb, albumPeakAmplitude),
+            null
         )
 
         fun hls(

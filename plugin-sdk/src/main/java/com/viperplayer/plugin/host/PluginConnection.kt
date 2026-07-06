@@ -70,6 +70,7 @@ class PluginConnection private constructor(
                     hostBridge.onMetadataUpdated(pluginId, id)
                 }
                 HostVerbs.Event.AUTH_STATE_CHANGED -> hostBridge.onAuthStateChanged(pluginId)
+                HostVerbs.Event.STATUS_CHANGED -> hostBridge.onStatusChanged(pluginId)
                 HostVerbs.Event.ERROR -> {
                     val body = data?.let { Envelope.payloadOrNull<PluginErrorBody>(it) }
                     hostBridge.onError(pluginId, body?.code ?: PluginErrorCode.UNKNOWN, body?.message)

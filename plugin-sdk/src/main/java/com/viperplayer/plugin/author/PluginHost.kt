@@ -55,6 +55,14 @@ class PluginHost internal constructor(
         host.emitEvent(HostVerbs.Event.AUTH_STATE_CHANGED, Envelope.empty())
     }
 
+    /**
+     * Tell the host this plugin's required-action status changed (permission granted, login
+     * expired, verification needed...). The host re-queries the registration's status provider.
+     */
+    fun notifyStatusChanged() {
+        host.emitEvent(HostVerbs.Event.STATUS_CHANGED, Envelope.empty())
+    }
+
     /** Surface an error to the host for display. */
     fun reportError(code: Int, message: String?) {
         host.emitEvent(HostVerbs.Event.ERROR, Envelope.of(PluginErrorBody(code, message)))

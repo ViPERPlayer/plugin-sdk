@@ -28,6 +28,7 @@ import com.viperplayer.plugin.model.PlaybackEvent
 import com.viperplayer.plugin.model.PluginErrorBody
 import com.viperplayer.plugin.model.PluginErrorCode
 import com.viperplayer.plugin.model.PluginException
+import com.viperplayer.plugin.model.PluginStatus
 import com.viperplayer.plugin.model.QueryRequest
 import com.viperplayer.plugin.model.SeekStreamRequest
 import com.viperplayer.plugin.model.BoolResult
@@ -149,6 +150,10 @@ abstract class ViperPluginService : Service() {
 
     private suspend fun dispatch(verb: String, args: Bundle, cb: IResultCallback) {
         when (verb) {
+            // ---- Status ----
+            Verbs.Status.GET ->
+                cb.onComplete(Envelope.of(registration.status?.invoke() ?: PluginStatus()))
+
             // ---- Source: search & detail ----
             Verbs.Source.SEARCH ->
                 cb.onComplete(Envelope.of(source().search(Envelope.payload<SearchRequest>(args))))

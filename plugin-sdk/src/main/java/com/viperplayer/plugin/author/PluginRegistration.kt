@@ -4,6 +4,7 @@ import com.viperplayer.plugin.model.Capability
 import com.viperplayer.plugin.model.DspCapabilities
 import com.viperplayer.plugin.model.LyricsCapabilities
 import com.viperplayer.plugin.model.PluginManifest
+import com.viperplayer.plugin.model.PluginStatus
 import com.viperplayer.plugin.model.ScrobbleCapabilities
 import com.viperplayer.plugin.model.SourceCapabilities
 import com.viperplayer.plugin.protocol.Protocol
@@ -29,6 +30,7 @@ class PluginRegistration internal constructor(
     val scrobble: ScrobbleSink?,
     val scrobbleCapabilities: ScrobbleCapabilities?,
     val metadata: MetadataProvider?,
+    internal val status: (suspend () -> PluginStatus)?,
     internal val onConnect: (suspend (PluginHost) -> Unit)?,
     internal val onShutdown: (() -> Unit)?,
 ) {
@@ -73,6 +75,7 @@ class PluginRegistration internal constructor(
         private var scrobble: ScrobbleSink? = null
         private var scrobbleCapabilities: ScrobbleCapabilities? = null
         private var metadata: MetadataProvider? = null
+        private var status: (suspend () -> PluginStatus)? = null
         private var onConnect: (suspend (PluginHost) -> Unit)? = null
         private var onShutdown: (() -> Unit)? = null
 
@@ -93,6 +96,13 @@ class PluginRegistration internal constructor(
 
         fun metadata(provider: MetadataProvider) = apply { metadata = provider }
 
+        /**
+         * Reports the plugin's pending user actions ([PluginStatus]) whenever the host asks —
+         * at connect, after [PluginHost.notifyStatusChanged], and when the user returns from a
+         * resolution step. Keep it fast and side-effect free.
+         */
+        fun status(provider: suspend () -> PluginStatus) = apply { status = provider }
+
         /** Called once after the host connects, with a [PluginHost] for talking back to the host. */
         fun onConnect(block: suspend (PluginHost) -> Unit) = apply { onConnect = block }
 
@@ -102,7 +112,7 @@ class PluginRegistration internal constructor(
         fun build(): PluginRegistration = PluginRegistration(
             id, name, version, author, description, settingsActivity,
             source, sourceCapabilities, dsp, lyrics, lyricsCapabilities,
-            scrobble, scrobbleCapabilities, metadata, onConnect, onShutdown,
+            scrobble, scrobbleCapabilities, metadata, status, onConnect, onShutdown,
         )
     }
 }

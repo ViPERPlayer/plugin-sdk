@@ -14,7 +14,10 @@ import com.viperplayer.plugin.model.Lyrics
 import com.viperplayer.plugin.model.LyricsRequest
 import com.viperplayer.plugin.model.MediaType
 import com.viperplayer.plugin.model.ResolveStreamRequest
+import com.viperplayer.plugin.model.PluginErrorCode
+import com.viperplayer.plugin.model.PluginException
 import com.viperplayer.plugin.model.PluginManifest
+import com.viperplayer.plugin.model.PluginStatus
 import com.viperplayer.plugin.model.Page
 import com.viperplayer.plugin.model.PageRequest
 import com.viperplayer.plugin.model.PlaybackEvent
@@ -36,9 +39,19 @@ import com.viperplayer.plugin.protocol.Verbs
  * for plugins that don't provide that surface.
  */
 class PluginClient internal constructor(
-    connection: PluginConnection,
+    private val connection: PluginConnection,
     val manifest: PluginManifest,
 ) {
+    /**
+     * The plugin's pending user actions (permission, login, verification...). Plugins predating
+     * the status verb answer UNSUPPORTED, which degrades to an empty (all-good) status.
+     */
+    suspend fun getStatus(): PluginStatus = try {
+        Envelope.payload(connection.invokeRaw(Verbs.Status.GET, Envelope.empty()).result)
+    } catch (e: PluginException) {
+        if (e.code == PluginErrorCode.UNSUPPORTED) PluginStatus() else throw e
+    }
+
     val source: SourceClient? =
         manifest.source?.let { SourceClient(connection, it) }
 

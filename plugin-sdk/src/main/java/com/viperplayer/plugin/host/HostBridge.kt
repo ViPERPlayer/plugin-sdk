@@ -20,6 +20,9 @@ interface HostBridge {
     /** A plugin reports its authentication state changed (e.g. signed in/out). */
     fun onAuthStateChanged(pluginId: String) {}
 
+    /** A plugin reports its required-action status changed; the host should re-query its status. */
+    fun onStatusChanged(pluginId: String) {}
+
     /** A plugin surfaced an error for display. */
     fun onError(pluginId: String, code: Int, message: String?) {}
 }

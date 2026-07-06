@@ -57,6 +57,11 @@ object Verbs {
     object Metadata {
         const val ENRICH = "metadata.enrich"
     }
+
+    object Status {
+        /** Query the plugin's [com.viperplayer.plugin.model.PluginStatus] (pending user actions). */
+        const val GET = "status.get"
+    }
 }
 
 /** Verbs the plugin sends *to* the host over `IViperHost`. */
@@ -68,6 +73,7 @@ object HostVerbs {
         const val CONTENT_CHANGED = "host.event.contentChanged"
         const val METADATA_UPDATED = "host.event.metadataUpdated"
         const val AUTH_STATE_CHANGED = "host.event.authStateChanged"
+        const val STATUS_CHANGED = "host.event.statusChanged"
         const val ERROR = "host.event.error"
     }
 }

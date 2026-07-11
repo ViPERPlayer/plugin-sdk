@@ -2,11 +2,22 @@ package com.viperplayer.plugin.model
 
 import kotlinx.serialization.Serializable
 
-/** A single timed lyric line (for synced lyrics). */
+/** A single timed word/syllable within a lyric line (for word-by-word "karaoke" lyrics). */
+@Serializable
+data class LyricWord(
+    val startMs: Long,
+    val text: String,
+)
+
+/**
+ * A single timed lyric line (for synced lyrics). [words], when non-empty, carries per-word timings
+ * for word-by-word highlighting; concatenating the word texts reproduces [text].
+ */
 @Serializable
 data class LyricLine(
     val startMs: Long,
     val text: String,
+    val words: List<LyricWord> = emptyList(),
 )
 
 /**

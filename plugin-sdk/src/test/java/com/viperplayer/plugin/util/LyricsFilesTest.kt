@@ -40,6 +40,33 @@ class LyricsFilesTest {
     }
 
     @Test
+    fun `resolveSidecarName finds an uppercase-extension sidecar case-insensitively`() {
+        val siblings = listOf("cover.jpg", "Song.LRC", "notes.txt")
+        assertEquals("Song.LRC", LyricsFiles.resolveSidecarName("/music/Song.flac", siblings))
+    }
+
+    @Test
+    fun `resolveSidecarName matches mixed-case extension and base name`() {
+        val siblings = listOf("SONG.Ttml")
+        assertEquals("SONG.Ttml", LyricsFiles.resolveSidecarName("/music/song.mp3", siblings))
+    }
+
+    @Test
+    fun `resolveSidecarName prefers lrc then ttml then srt when several exist`() {
+        val siblings = listOf("Song.SRT", "Song.Ttml", "Song.LRC")
+        assertEquals("Song.LRC", LyricsFiles.resolveSidecarName("/music/Song.flac", siblings))
+        val onlyTtmlAndSrt = listOf("Song.SRT", "Song.Ttml")
+        assertEquals("Song.Ttml", LyricsFiles.resolveSidecarName("/music/Song.flac", onlyTtmlAndSrt))
+    }
+
+    @Test
+    fun `resolveSidecarName returns null when no matching sidecar is present`() {
+        val siblings = listOf("Other.lrc", "Song.jpg")
+        assertNull(LyricsFiles.resolveSidecarName("/music/Song.flac", siblings))
+        assertNull(LyricsFiles.resolveSidecarName("", listOf("Song.lrc")))
+    }
+
+    @Test
     fun `parseSidecar dispatches by extension`() {
         val lrc = LyricsFiles.parseSidecar("song.lrc", "[00:01.00]hi")!!
         assertEquals("lrc", lrc.source)

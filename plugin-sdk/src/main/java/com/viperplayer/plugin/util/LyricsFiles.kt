@@ -34,6 +34,29 @@ object LyricsFiles {
     }
 
     /**
+     * Resolve the sidecar for [audioPath] against an actual directory listing [siblingNames] (the file
+     * names, not full paths, that live alongside the audio file), matched **case-insensitively** so a
+     * `Song.LRC` / `Song.Ttml` next to `song.flac` is still found on a case-sensitive file system.
+     * Returns the matched sibling's own name in preference order (LRC, then TTML, then SRT), or null
+     * when no sidecar with a supported extension and the same base name exists. The base-name match is
+     * also case-insensitive so `SONG.lrc` next to `song.flac` resolves.
+     */
+    fun resolveSidecarName(audioPath: String, siblingNames: List<String>): String? {
+        if (audioPath.isBlank()) return null
+        val slash = audioPath.lastIndexOf('/')
+        val name = if (slash >= 0) audioPath.substring(slash + 1) else audioPath
+        val dot = name.lastIndexOf('.')
+        val base = if (dot > 0) name.substring(0, dot) else name
+        if (base.isEmpty()) return null
+        for (ext in SUPPORTED_EXTENSIONS) {
+            val wanted = "$base.$ext"
+            val match = siblingNames.firstOrNull { it.equals(wanted, ignoreCase = true) }
+            if (match != null) return match
+        }
+        return null
+    }
+
+    /**
      * Parse sidecar [content] using the parser implied by [extensionOrPath] (a bare extension like
      * `"ttml"` or a full path/filename whose extension is used). Returns null when the extension is
      * unrecognised or the content produced nothing timed *and* had no plain text to show.

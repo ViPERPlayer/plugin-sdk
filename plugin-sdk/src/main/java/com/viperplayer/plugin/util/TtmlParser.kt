@@ -60,7 +60,14 @@ object TtmlParser {
         val words = ArrayList<LyricWord>(spans.size)
         var lastEnd = 0
         for (span in spans) {
-            val begin = BEGIN_ATTR.find(span.groupValues[1])?.let { parseTime(it.groupValues[1]) } ?: continue
+            val begin = BEGIN_ATTR.find(span.groupValues[1])?.let { parseTime(it.groupValues[1]) }
+                ?: run {
+                    // An untimed span still consumes its region; advancing lastEnd past it keeps its
+                    // stripped text out of the next word's leading separator.
+                    lastEnd = span.range.last + 1
+                    return@run null
+                }
+                ?: continue
             // Preserve any literal whitespace that sits *between* spans (word separators).
             val gap = body.substring(lastEnd, span.range.first)
             val sep = decodeEntities(ANY_TAG.replace(gap, "")).replace(WHITESPACE, " ")

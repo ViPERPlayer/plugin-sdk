@@ -138,4 +138,26 @@ class TtmlParserTest {
     fun `frames unit is unsupported and skips the paragraph`() {
         assertNull(TtmlParser.parse("<p begin=\"10f\">x</p>").lines.firstOrNull())
     }
+
+    @Test
+    fun `an untimed span between timed spans does not leak its text into the next word`() {
+        // The middle span carries no begin; its "and" text must be dropped from the word list, not
+        // folded into the following word's leading separator ("world" must stay "world", not "and world").
+        val ttml = """
+            <p begin="00:00:10.000" end="00:00:11.500">
+              <span begin="00:00:10.000" end="00:00:10.400">Hey</span>
+              <span>and</span>
+              <span begin="00:00:10.900" end="00:00:11.500">world</span>
+            </p>
+        """.trimIndent()
+        val lyrics = TtmlParser.parse(ttml)
+        assertEquals(1, lyrics.lines.size)
+        val line = lyrics.lines[0]
+        assertEquals(2, line.words.size)
+        assertEquals(10_000L, line.words[0].startMs)
+        assertEquals(10_900L, line.words[1].startMs)
+        // The skipped span's text is not glued onto "world".
+        assertEquals("world", line.words[1].text.trim())
+        assertFalse(line.words[1].text.contains("and"))
+    }
 }

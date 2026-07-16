@@ -6,6 +6,8 @@ import com.viperplayer.plugin.model.BoolResult
 import com.viperplayer.plugin.model.BrowseCategory
 import com.viperplayer.plugin.model.Capability
 import com.viperplayer.plugin.model.CategoryContentsRequest
+import com.viperplayer.plugin.model.CreatePlaylistRequest
+import com.viperplayer.plugin.model.CreatePlaylistResult
 import com.viperplayer.plugin.model.FilterSectionRequest
 import com.viperplayer.plugin.model.HomeContent
 import com.viperplayer.plugin.model.IdPageRequest
@@ -22,7 +24,12 @@ import com.viperplayer.plugin.model.Page
 import com.viperplayer.plugin.model.PageRequest
 import com.viperplayer.plugin.model.PlaybackEvent
 import com.viperplayer.plugin.model.Playlist
+import com.viperplayer.plugin.model.PlaylistRequest
+import com.viperplayer.plugin.model.PlaylistTrackRequest
 import com.viperplayer.plugin.model.QueryRequest
+import com.viperplayer.plugin.model.RenamePlaylistRequest
+import com.viperplayer.plugin.model.SetFollowedRequest
+import com.viperplayer.plugin.model.SetLikedRequest
 import com.viperplayer.plugin.model.SearchRequest
 import com.viperplayer.plugin.model.SearchResult
 import com.viperplayer.plugin.model.SearchSuggestions
@@ -140,6 +147,40 @@ class SourceClient internal constructor(
 
     suspend fun closeStream(streamId: String) {
         connection.invokeRaw(Verbs.Source.CLOSE_STREAM, Envelope.of(IdRequest(streamId)))
+    }
+
+    // ---- Library WRITE (push) — the host side of two-way sync. Gated on
+    // [SourceCapabilities.libraryWrite]; a plugin that predates these verbs (or doesn't implement
+    // them) answers UNSUPPORTED, which the push sync manager turns into a "kept/skipped" outbox
+    // entry rather than an error. ----
+
+    suspend fun setLiked(trackId: String, liked: Boolean) {
+        connection.invokeRaw(Verbs.Source.SET_LIKED, Envelope.of(SetLikedRequest(trackId, liked)))
+    }
+
+    suspend fun setFollowed(artistId: String, followed: Boolean) {
+        connection.invokeRaw(Verbs.Source.SET_FOLLOWED, Envelope.of(SetFollowedRequest(artistId, followed)))
+    }
+
+    suspend fun createPlaylist(name: String): String =
+        Envelope.payload<CreatePlaylistResult>(
+            connection.invokeRaw(Verbs.Source.PLAYLIST_CREATE, Envelope.of(CreatePlaylistRequest(name))).result
+        ).playlistId
+
+    suspend fun renamePlaylist(playlistId: String, name: String) {
+        connection.invokeRaw(Verbs.Source.PLAYLIST_RENAME, Envelope.of(RenamePlaylistRequest(playlistId, name)))
+    }
+
+    suspend fun deletePlaylist(playlistId: String) {
+        connection.invokeRaw(Verbs.Source.PLAYLIST_DELETE, Envelope.of(PlaylistRequest(playlistId)))
+    }
+
+    suspend fun addTrackToPlaylist(playlistId: String, trackId: String) {
+        connection.invokeRaw(Verbs.Source.PLAYLIST_ADD_TRACK, Envelope.of(PlaylistTrackRequest(playlistId, trackId)))
+    }
+
+    suspend fun removeTrackFromPlaylist(playlistId: String, trackId: String) {
+        connection.invokeRaw(Verbs.Source.PLAYLIST_REMOVE_TRACK, Envelope.of(PlaylistTrackRequest(playlistId, trackId)))
     }
 }
 

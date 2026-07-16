@@ -12,6 +12,8 @@ import com.viperplayer.plugin.ipc.IResultCallback
 import com.viperplayer.plugin.ipc.IViperHost
 import com.viperplayer.plugin.ipc.IViperPlugin
 import com.viperplayer.plugin.model.CategoryContentsRequest
+import com.viperplayer.plugin.model.CreatePlaylistRequest
+import com.viperplayer.plugin.model.CreatePlaylistResult
 import com.viperplayer.plugin.model.DspCapabilities
 import com.viperplayer.plugin.model.DspClose
 import com.viperplayer.plugin.model.DspConfigure
@@ -25,12 +27,17 @@ import com.viperplayer.plugin.model.ResolveStreamRequest
 import com.viperplayer.plugin.model.Lyrics
 import com.viperplayer.plugin.model.PageRequest
 import com.viperplayer.plugin.model.PlaybackEvent
+import com.viperplayer.plugin.model.PlaylistRequest
+import com.viperplayer.plugin.model.PlaylistTrackRequest
 import com.viperplayer.plugin.model.PluginErrorBody
 import com.viperplayer.plugin.model.PluginErrorCode
 import com.viperplayer.plugin.model.PluginException
 import com.viperplayer.plugin.model.PluginStatus
 import com.viperplayer.plugin.model.QueryRequest
+import com.viperplayer.plugin.model.RenamePlaylistRequest
 import com.viperplayer.plugin.model.SeekStreamRequest
+import com.viperplayer.plugin.model.SetFollowedRequest
+import com.viperplayer.plugin.model.SetLikedRequest
 import com.viperplayer.plugin.model.BoolResult
 import com.viperplayer.plugin.model.SearchRequest
 import com.viperplayer.plugin.model.Song
@@ -190,6 +197,36 @@ abstract class ViperPluginService : Service() {
                 cb.onComplete(Envelope.of(source().getLibraryArtists(pageOf(args))))
             Verbs.Source.LIBRARY_PLAYLISTS ->
                 cb.onComplete(Envelope.of(source().getLibraryPlaylists(pageOf(args))))
+
+            // ---- Source: library WRITE (push) ----
+            Verbs.Source.SET_LIKED -> Envelope.payload<SetLikedRequest>(args).let {
+                source().setLiked(it.trackId, it.liked)
+                cb.onComplete(Envelope.empty())
+            }
+            Verbs.Source.SET_FOLLOWED -> Envelope.payload<SetFollowedRequest>(args).let {
+                source().setFollowed(it.artistId, it.followed)
+                cb.onComplete(Envelope.empty())
+            }
+            Verbs.Source.PLAYLIST_CREATE -> Envelope.payload<CreatePlaylistRequest>(args).let {
+                val id = source().createPlaylist(it.name)
+                cb.onComplete(Envelope.of(CreatePlaylistResult(id)))
+            }
+            Verbs.Source.PLAYLIST_RENAME -> Envelope.payload<RenamePlaylistRequest>(args).let {
+                source().renamePlaylist(it.playlistId, it.name)
+                cb.onComplete(Envelope.empty())
+            }
+            Verbs.Source.PLAYLIST_DELETE -> Envelope.payload<PlaylistRequest>(args).let {
+                source().deletePlaylist(it.playlistId)
+                cb.onComplete(Envelope.empty())
+            }
+            Verbs.Source.PLAYLIST_ADD_TRACK -> Envelope.payload<PlaylistTrackRequest>(args).let {
+                source().addTrackToPlaylist(it.playlistId, it.trackId)
+                cb.onComplete(Envelope.empty())
+            }
+            Verbs.Source.PLAYLIST_REMOVE_TRACK -> Envelope.payload<PlaylistTrackRequest>(args).let {
+                source().removeTrackFromPlaylist(it.playlistId, it.trackId)
+                cb.onComplete(Envelope.empty())
+            }
 
             // ---- Source: browse & home ----
             Verbs.Source.BROWSE_CATEGORIES ->

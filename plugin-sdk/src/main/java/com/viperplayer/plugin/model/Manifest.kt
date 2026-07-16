@@ -14,6 +14,12 @@ data class SourceCapabilities(
     val searchSuggestions: Boolean = false,
     val browse: Boolean = false,
     val library: Boolean = false,
+    /**
+     * The plugin can PUSH local library changes back to the signed-in account: like/unlike,
+     * follow/unfollow, create/rename/delete playlist, add/remove playlist track. Defaults false so
+     * existing plugins are treated as read-only and the host keeps their queued changes as skipped.
+     */
+    val libraryWrite: Boolean = false,
     val playlists: Boolean = false,
     val artistDetails: Boolean = true,
     val albumDetails: Boolean = true,

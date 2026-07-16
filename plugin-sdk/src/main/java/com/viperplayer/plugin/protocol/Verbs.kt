@@ -27,6 +27,16 @@ object Verbs {
         const val LIBRARY_ARTISTS = "source.library.artists"
         const val LIBRARY_PLAYLISTS = "source.library.playlists"
 
+        // ---- Library WRITE (push): optional, gated on SourceCapabilities.libraryWrite. Plugins that
+        // don't implement these answer UNSUPPORTED and the host keeps the change queued as skipped. ----
+        const val SET_LIKED = "source.library.setLiked"
+        const val SET_FOLLOWED = "source.library.setFollowed"
+        const val PLAYLIST_CREATE = "source.library.playlist.create"
+        const val PLAYLIST_RENAME = "source.library.playlist.rename"
+        const val PLAYLIST_DELETE = "source.library.playlist.delete"
+        const val PLAYLIST_ADD_TRACK = "source.library.playlist.addTrack"
+        const val PLAYLIST_REMOVE_TRACK = "source.library.playlist.removeTrack"
+
         const val BROWSE_CATEGORIES = "source.browse.categories"
         const val CATEGORY_CONTENTS = "source.browse.category"
 

@@ -41,3 +41,37 @@ data class SeekStreamRequest(val streamId: String, val positionMs: Long)
 /** A single boolean response (e.g. whether a seek succeeded). */
 @Serializable
 data class BoolResult(val value: Boolean)
+
+// ---- Library WRITE (push) requests/responses ----
+// These back the optional account-library write verbs. All fields use the plugin's own source ids.
+
+/** Set (or clear) a track's liked/saved state on the account. */
+@Serializable
+data class SetLikedRequest(val trackId: String, val liked: Boolean)
+
+/** Follow (or unfollow) an artist on the account. */
+@Serializable
+data class SetFollowedRequest(val artistId: String, val followed: Boolean)
+
+/** Create a playlist on the account. */
+@Serializable
+data class CreatePlaylistRequest(val name: String)
+
+/**
+ * The id the account assigned to a freshly created playlist. The host stores it so later
+ * add/remove/rename mutations for that playlist route to the right remote id.
+ */
+@Serializable
+data class CreatePlaylistResult(val playlistId: String)
+
+/** Rename a playlist on the account. */
+@Serializable
+data class RenamePlaylistRequest(val playlistId: String, val name: String)
+
+/** A single playlist target (delete). */
+@Serializable
+data class PlaylistRequest(val playlistId: String)
+
+/** Add/remove a track within a playlist on the account. */
+@Serializable
+data class PlaylistTrackRequest(val playlistId: String, val trackId: String)

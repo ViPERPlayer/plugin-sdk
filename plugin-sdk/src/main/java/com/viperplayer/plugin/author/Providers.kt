@@ -90,6 +90,39 @@ interface SourceProvider {
      */
     suspend fun resolveStream(songId: String, type: MediaType, maxBitrateKbps: Int? = null): StreamResponse
 
+    // ---- Library WRITE (push) — optional. Override + declare
+    // [com.viperplayer.plugin.model.SourceCapabilities.libraryWrite] to let ViPER propagate local
+    // library changes up to the signed-in account. Every method defaults to UNSUPPORTED, so a plugin
+    // that doesn't implement writes still compiles and connects; the host keeps such changes queued. ----
+
+    /** Set (or clear) a track's liked/saved state on the account. */
+    suspend fun setLiked(trackId: String, liked: Boolean): Unit =
+        throw PluginException(PluginErrorCode.UNSUPPORTED, "Library write is not supported")
+
+    /** Follow (or unfollow) an artist on the account. */
+    suspend fun setFollowed(artistId: String, followed: Boolean): Unit =
+        throw PluginException(PluginErrorCode.UNSUPPORTED, "Library write is not supported")
+
+    /** Create a playlist on the account, returning the account-assigned playlist id. */
+    suspend fun createPlaylist(name: String): String =
+        throw PluginException(PluginErrorCode.UNSUPPORTED, "Library write is not supported")
+
+    /** Rename a playlist on the account. */
+    suspend fun renamePlaylist(playlistId: String, name: String): Unit =
+        throw PluginException(PluginErrorCode.UNSUPPORTED, "Library write is not supported")
+
+    /** Delete a playlist from the account. */
+    suspend fun deletePlaylist(playlistId: String): Unit =
+        throw PluginException(PluginErrorCode.UNSUPPORTED, "Library write is not supported")
+
+    /** Add a track to a playlist on the account. */
+    suspend fun addTrackToPlaylist(playlistId: String, trackId: String): Unit =
+        throw PluginException(PluginErrorCode.UNSUPPORTED, "Library write is not supported")
+
+    /** Remove a track from a playlist on the account. */
+    suspend fun removeTrackFromPlaylist(playlistId: String, trackId: String): Unit =
+        throw PluginException(PluginErrorCode.UNSUPPORTED, "Library write is not supported")
+
     /** Seek a live PCM stream, if [com.viperplayer.plugin.model.PcmStream.seekable]. */
     suspend fun seekStream(streamId: String, positionMs: Long): Boolean = false
 

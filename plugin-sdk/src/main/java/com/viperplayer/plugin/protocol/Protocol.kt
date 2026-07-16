@@ -28,6 +28,13 @@ object Protocol {
     /** Optional description shown before the plugin is connected. */
     const val META_DESCRIPTION = "com.viperplayer.plugin.DESCRIPTION"
 
+    /**
+     * Optional HTTPS URL of the plugin's update feed — a small JSON manifest the host fetches to
+     * learn the latest available version and where to download it (see the host's update system).
+     * A plugin that omits this key opts out of in-app updates and is simply skipped by the checker.
+     */
+    const val META_UPDATE_URL = "com.viperplayer.plugin.UPDATE_URL"
+
     // ---- Bundle keys carried inside invoke()/result transactions ----
     /** Codec-encoded request/response payload (`ByteArray`). */
     const val KEY_PAYLOAD = "viper.payload"

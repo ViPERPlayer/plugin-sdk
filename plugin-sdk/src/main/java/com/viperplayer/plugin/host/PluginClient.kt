@@ -10,6 +10,8 @@ import com.viperplayer.plugin.model.CreatePlaylistRequest
 import com.viperplayer.plugin.model.CreatePlaylistResult
 import com.viperplayer.plugin.model.FilterSectionRequest
 import com.viperplayer.plugin.model.HomeContent
+import com.viperplayer.plugin.model.HomeContinuationRequest
+import com.viperplayer.plugin.model.HomeRequest
 import com.viperplayer.plugin.model.IdPageRequest
 import com.viperplayer.plugin.model.IdRequest
 import com.viperplayer.plugin.model.Lyrics
@@ -131,6 +133,21 @@ class SourceClient internal constructor(
 
     suspend fun getHome(): HomeContent =
         Envelope.payload(connection.invokeRaw(Verbs.Source.HOME, Envelope.empty()).result)
+
+    /**
+     * Re-fetch the Home feed filtered by a top-level chip. A plugin (or older APK) that doesn't
+     * implement the chip verb answers UNSUPPORTED; the caller (host data source) catches that and
+     * falls back to the base [getHome].
+     */
+    suspend fun getHome(chipId: String?): HomeContent =
+        Envelope.payload(connection.invokeRaw(Verbs.Source.HOME_FILTERED, Envelope.of(HomeRequest(chipId))).result)
+
+    /**
+     * Fetch the next page of Home sections for a continuation token (infinite scroll). A plugin (or
+     * older APK) without the verb answers UNSUPPORTED; the caller degrades to "no more pages".
+     */
+    suspend fun getHomeContinuation(continuation: String): HomeContent =
+        Envelope.payload(connection.invokeRaw(Verbs.Source.HOME_CONTINUATION, Envelope.of(HomeContinuationRequest(continuation))).result)
 
     suspend fun filterSection(sectionId: String, filterKey: String): SearchResult =
         Envelope.payload(connection.invokeRaw(Verbs.Source.FILTER_SECTION, Envelope.of(FilterSectionRequest(sectionId, filterKey))).result)

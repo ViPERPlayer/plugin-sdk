@@ -43,6 +43,13 @@ object Verbs {
         const val HOME = "source.home"
         const val FILTER_SECTION = "source.filterSection"
 
+        // ---- Home: chips + infinite scroll (optional). A plugin (or older APK) that doesn't
+        // implement these answers UNSUPPORTED; the host falls back to the base feed / no more pages. ----
+        /** Re-fetch the Home feed filtered by a tapped top-level chip. */
+        const val HOME_FILTERED = "source.home.filtered"
+        /** Fetch the next page of Home sections for a continuation token. */
+        const val HOME_CONTINUATION = "source.home.continuation"
+
         const val RESOLVE_STREAM = "source.resolveStream"
         const val SEEK_STREAM = "source.seekStream"
         const val CLOSE_STREAM = "source.closeStream"

@@ -243,8 +243,35 @@ data class UnknownSection(
     override val action: SectionAction? = null,
 ) : HomeSection
 
+/**
+ * A top-level filter chip on the Home feed (e.g. "Relax", "Workout", "Podcasts") — modelled on
+ * the reference design's home chip row. Tapping one asks the plugin to re-fetch the whole feed
+ * filtered by [id] via [com.viperplayer.plugin.author.SourceProvider.getHome] with a chipId; the
+ * host replaces the feed with the returned content.
+ *
+ * OPTIONAL and backward-compatible: a plugin that emits no chips ([HomeContent.chips] empty) shows no
+ * chip row at all, and the chip-aware getHome overload defaults to ignoring the chip.
+ */
+@Serializable
+data class HomeChip(
+    /** Opaque, plugin-defined chip id passed back to `getHome(chipId)`. */
+    val id: String,
+    val title: String,
+)
+
 @Serializable
 data class HomeContent(
     val quickPicks: List<MediaItem> = emptyList(),
     val sections: List<HomeSection> = emptyList(),
+    /**
+     * OPTIONAL top-level filter chips shown above the feed. Empty (the default) = no chip row, so
+     * existing plugins are unaffected. Wire-compatible: absent in an old payload decodes to empty.
+     */
+    val chips: List<HomeChip> = emptyList(),
+    /**
+     * OPTIONAL opaque pagination token for infinite scroll. Non-null = more sections can be fetched
+     * via [com.viperplayer.plugin.author.SourceProvider.getHomeContinuation]; null (the default) = no
+     * more pages. Wire-compatible: absent in an old payload decodes to null.
+     */
+    val continuation: String? = null,
 )

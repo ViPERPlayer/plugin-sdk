@@ -23,6 +23,17 @@ data class CategoryContentsRequest(val categoryId: String, val page: PageRequest
 data class FilterSectionRequest(val sectionId: String, val filterKey: String)
 
 /**
+ * Fetch the Home feed, optionally filtered by a tapped top-level [HomeChip]. [chipId] null = the base
+ * feed. Tolerant of an older host that only sent an empty bundle (decodes to a null chip).
+ */
+@Serializable
+data class HomeRequest(val chipId: String? = null)
+
+/** Fetch the next page of Home sections for an opaque [continuation] token (infinite scroll). */
+@Serializable
+data class HomeContinuationRequest(val continuation: String)
+
+/**
  * Resolve a playable's stream. [type] tells the plugin whether this is audio ([MediaType.SONG]) or
  * video ([MediaType.VIDEO]) so it can use the right endpoint. Defaults to SONG for tolerant decoding
  * of an older host that only sent an id.

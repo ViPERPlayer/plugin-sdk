@@ -3,8 +3,11 @@ package com.viperplayer.plugin
 import com.viperplayer.plugin.model.Album
 import com.viperplayer.plugin.model.AlbumType
 import com.viperplayer.plugin.model.FeaturedCardsSection
+import com.viperplayer.plugin.model.HomeChip
+import com.viperplayer.plugin.model.HomeContent
 import com.viperplayer.plugin.model.HomeSection
 import com.viperplayer.plugin.model.ItemShape
+import com.viperplayer.plugin.model.ListSection
 import com.viperplayer.plugin.model.MediaItem
 import com.viperplayer.plugin.model.MoodChip
 import com.viperplayer.plugin.model.MoodGridSection
@@ -102,5 +105,41 @@ class CodecForwardCompatTest {
             ),
         )
         assertEquals(section, Codec.decode<HomeSection>(Codec.encode(section)))
+    }
+
+    // ---- HomeContent new OPTIONAL fields (chips + continuation): forward/backward compatibility ----
+
+    @Test
+    fun homeContentWithoutNewFields_backwardCompat_decodesToDefaults() {
+        // An OLD plugin's payload predates chips + continuation; the new host must fill the defaults.
+        val json = """{"sections":[{"#t":"list","id":"l1","title":"Recent"}]}"""
+        val content = Codec.json.decodeFromString<HomeContent>(json)
+        assertEquals(1, content.sections.size)
+        assertTrue("chips absent decodes to empty", content.chips.isEmpty())
+        assertEquals("continuation absent decodes to null", null, content.continuation)
+    }
+
+    @Test
+    fun homeContentWithNewFields_roundTrips() {
+        val content = HomeContent(
+            sections = listOf(ListSection(id = "l1", title = "Recent", items = listOf(Song(id = "s", title = "T")))),
+            chips = listOf(HomeChip(id = "relax", title = "Relax"), HomeChip(id = "focus", title = "Focus")),
+            continuation = "page-2",
+        )
+        assertEquals(content, Codec.decode<HomeContent>(Codec.encode(content)))
+    }
+
+    @Test
+    fun homeContentWithNewFields_forwardCompat_oldHostIgnoresUnknownExtras() {
+        // A NEW plugin also sends fields (and a chip field) an OLD host doesn't know — they're dropped,
+        // but the known fields (including our new chips/continuation) still decode.
+        val json = """
+            {"sections":[],"chips":[{"id":"relax","title":"Relax","emoji":"😌"}],
+             "continuation":"tok","futureField":123}
+        """.trimIndent()
+        val content = Codec.json.decodeFromString<HomeContent>(json)
+        assertEquals(1, content.chips.size)
+        assertEquals("relax", content.chips[0].id)
+        assertEquals("tok", content.continuation)
     }
 }

@@ -74,6 +74,25 @@ interface SourceProvider {
     suspend fun getHome(): HomeContent = HomeContent()
 
     /**
+     * Re-fetch the Home feed filtered by a tapped top-level [com.viperplayer.plugin.model.HomeChip].
+     * [chipId] is the chosen chip's id, or `null` for the base feed. Override this ONLY if you emit
+     * [com.viperplayer.plugin.model.HomeContent.chips]. The default ignores the chip and returns the
+     * base [getHome], so a plugin that doesn't support chip filtering keeps working: the host shows the
+     * base feed on chip taps. A plugin from an even older SDK that lacks this verb entirely answers
+     * UNSUPPORTED, which the host also degrades to the base feed.
+     */
+    suspend fun getHome(chipId: String?): HomeContent = getHome()
+
+    /**
+     * Fetch the next page of Home sections for an opaque [continuation] token (infinite scroll). The
+     * returned content's [com.viperplayer.plugin.model.HomeContent.sections] are APPENDED to the feed,
+     * and its [com.viperplayer.plugin.model.HomeContent.continuation] becomes the next token (null =
+     * end). Override this ONLY if [getHome] returns a non-null continuation. The default returns an
+     * empty page with no further token, so a plugin without pagination is unaffected.
+     */
+    suspend fun getHomeContinuation(continuation: String): HomeContent = HomeContent()
+
+    /**
      * Re-fetch a home section's items for the tapped filter chip. [sectionId] is the section the chip
      * belongs to and [filterKey] is the chosen [com.viperplayer.plugin.model.SectionFilter.key]. The
      * host keeps the section's title/rows/chips and swaps in the returned items. Default returns empty

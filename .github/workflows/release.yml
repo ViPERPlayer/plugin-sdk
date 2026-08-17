@@ -27,3 +27,32 @@ jobs:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
         run: ./gradlew :plugin-sdk:publish -PVERSION_NAME="$VERSION_NAME"
+
+      # The Gradle step above uploads to Sonatype's OSSRH-compatibility endpoint, which parks the
+      # artifacts in a legacy-style open staging repository. They are NOT visible in the Central
+      # Portal, and cannot be released, until that staging repo is promoted into a Portal
+      # deployment — this call does that. Without it the release silently goes nowhere: the build
+      # succeeds and nothing ever appears under Deployments.
+      #
+      # publishing_type=user_managed leaves the deployment for a human to release in the Portal.
+      # Switch to `automatic` to have Sonatype release it as soon as validation passes.
+      - name: Promote the staging repository into a Portal deployment
+        env:
+          MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+        run: |
+          set -euo pipefail
+          token=$(printf '%s:%s' "$MAVEN_CENTRAL_USERNAME" "$MAVEN_CENTRAL_PASSWORD" | base64 | tr -d '\n')
+          response=$(curl -sS -w '\n%{http_code}' -X POST \
+            -H "Authorization: Bearer $token" \
+            "https://ossrh-staging-api.central.sonatype.com/manual/upload/defaultRepository/io.github.viperplayer?publishing_type=user_managed")
+          body=$(printf '%s' "$response" | sed '$d')
+          code=$(printf '%s' "$response" | tail -n1)
+          echo "HTTP $code"
+          echo "$body"
+          # A 4xx/5xx here means the artifacts are stranded in staging, so fail loudly rather than
+          # reporting a green release that published nothing.
+          case "$code" in
+            2*) echo "Promoted. Release it at https://central.sonatype.com/publishing/deployments" ;;
+            *)  echo "::error::Promotion failed - artifacts are still in staging"; exit 1 ;;
+          esac

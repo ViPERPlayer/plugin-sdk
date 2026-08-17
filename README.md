@@ -60,14 +60,20 @@ Without the property the published artifact is used, which is the default everyw
 git tag v1.2.3 && git push origin v1.2.3
 ```
 
-The workflow derives the version from the tag (`v1.2.3` → `1.2.3`), signs the artifacts and uploads
-them to the Central Portal. Then **open the Portal's Deployments page and click Publish** — the
-upload lands validated but unreleased, and that click is what pushes it to Maven Central. It appears
-for consumers within ~15–30 minutes.
+That is the whole release. The workflow derives the version from the tag (`v1.2.3` → `1.2.3`), signs
+the artifacts, uploads them, promotes the staging repository into a Portal deployment and lets
+Sonatype release it once validation passes. It reaches consumers within ~15–30 minutes.
 
-That one manual step is deliberate. Sonatype ships no official Gradle plugin, so the alternative is a
-third-party one; this build uses only Gradle's own `maven-publish` and `signing` against Sonatype's
-OSSRH-compatibility endpoint, and pays for that with a click per release.
+**A Maven Central release is permanent** — a version can be deprecated but never unpublished or
+replaced — so pushing a tag is the point of no return. To inspect the validation result before
+anything goes public, change `publishing_type=automatic` to `user_managed` in the workflow and
+release by hand from the Portal.
+
+The build deliberately uses only Gradle's own `maven-publish` and `signing` rather than a
+third-party publishing plugin. Sonatype ships no official Gradle plugin, so uploads go to their
+OSSRH-compatibility endpoint — which parks artifacts in a legacy staging repository that must then
+be promoted into a Portal deployment. That promotion is the `curl` step in the workflow; without it
+the build reports success and nothing is ever published.
 
 Four repository secrets are required:
 

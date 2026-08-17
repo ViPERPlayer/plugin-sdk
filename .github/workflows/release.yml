@@ -34,8 +34,10 @@ jobs:
       # deployment — this call does that. Without it the release silently goes nowhere: the build
       # succeeds and nothing ever appears under Deployments.
       #
-      # publishing_type=user_managed leaves the deployment for a human to release in the Portal.
-      # Switch to `automatic` to have Sonatype release it as soon as validation passes.
+      # publishing_type=automatic: Sonatype releases the deployment as soon as validation passes,
+      # so pushing the tag is the whole release. Note that a Maven Central release is PERMANENT —
+      # a version can be deprecated but never unpublished or replaced — so the tag is the point of
+      # no return. Switch to `user_managed` to get a look at the validation result first.
       - name: Promote the staging repository into a Portal deployment
         env:
           MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
@@ -45,7 +47,7 @@ jobs:
           token=$(printf '%s:%s' "$MAVEN_CENTRAL_USERNAME" "$MAVEN_CENTRAL_PASSWORD" | base64 | tr -d '\n')
           response=$(curl -sS -w '\n%{http_code}' -X POST \
             -H "Authorization: Bearer $token" \
-            "https://ossrh-staging-api.central.sonatype.com/manual/upload/defaultRepository/io.github.viperplayer?publishing_type=user_managed")
+            "https://ossrh-staging-api.central.sonatype.com/manual/upload/defaultRepository/io.github.viperplayer?publishing_type=automatic")
           body=$(printf '%s' "$response" | sed '$d')
           code=$(printf '%s' "$response" | tail -n1)
           echo "HTTP $code"
@@ -53,6 +55,6 @@ jobs:
           # A 4xx/5xx here means the artifacts are stranded in staging, so fail loudly rather than
           # reporting a green release that published nothing.
           case "$code" in
-            2*) echo "Promoted. Release it at https://central.sonatype.com/publishing/deployments" ;;
+            2*) echo "Promoted and queued for automatic release: https://central.sonatype.com/publishing/deployments" ;;
             *)  echo "::error::Promotion failed - artifacts are still in staging"; exit 1 ;;
           esac

@@ -54,7 +54,32 @@ Without the property the published artifact is used, which is the default everyw
 ./gradlew :plugin-sdk:publishToMavenLocal -PVERSION_NAME=1.0.0   # install locally
 ```
 
-Releases are cut by pushing a `v*` tag; the workflow publishes the tagged version to Maven Central.
-It needs `SIGNING_KEY` (an ASCII-armoured PGP secret key), `SIGNING_PASSWORD`, and the Central
-Portal credentials as repository secrets. Builds without those secrets skip signing and still
-compile, so forks and pull requests are unaffected.
+## Releasing
+
+```bash
+git tag v1.2.3 && git push origin v1.2.3
+```
+
+The workflow derives the version from the tag (`v1.2.3` → `1.2.3`), signs the artifacts and uploads
+them to the Central Portal. Then **open the Portal's Deployments page and click Publish** — the
+upload lands validated but unreleased, and that click is what pushes it to Maven Central. It appears
+for consumers within ~15–30 minutes.
+
+That one manual step is deliberate. Sonatype ships no official Gradle plugin, so the alternative is a
+third-party one; this build uses only Gradle's own `maven-publish` and `signing` against Sonatype's
+OSSRH-compatibility endpoint, and pays for that with a click per release.
+
+Four repository secrets are required:
+
+| Secret | What it is |
+|---|---|
+| `SIGNING_KEY` | ASCII-armoured PGP **private** key (`gpg --armor --export-secret-keys <ID>`) |
+| `SIGNING_PASSWORD` | that key's passphrase |
+| `MAVEN_CENTRAL_USERNAME` | Central Portal **user token** name (not your login) |
+| `MAVEN_CENTRAL_PASSWORD` | the matching token password |
+
+The matching **public** key must be on a keyserver (`gpg --keyserver keyserver.ubuntu.com
+--send-keys <ID>`) or Central cannot verify the signature and will reject the deployment.
+
+Builds without these secrets skip signing and still compile, so forks and pull requests are
+unaffected.
